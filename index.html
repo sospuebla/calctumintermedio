@@ -1,0 +1,3407 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora TUM Intermedio | Paciente, Infusiones, SRI, Ventilador y Escalas</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: #111827;
+      --panel-2: #1f2937;
+      --card: #ffffff;
+      --muted-card: #f8fafc;
+      --text: #111827;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --brand: #0ea5e9;
+      --brand-dark: #0369a1;
+      --ok: #16a34a;
+      --warn: #f59e0b;
+      --danger: #dc2626;
+      --radius: 18px;
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
+      --input: #ffffff;
+      --input-line: #cbd5e1;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(14, 165, 233, 0.28), transparent 28rem),
+        linear-gradient(180deg, #0f172a 0%, #172554 35%, #e2e8f0 35%, #f8fafc 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      color: #fff;
+      padding: 30px 18px 18px;
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: end;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(1.7rem, 4vw, 3rem);
+      letter-spacing: -0.04em;
+      line-height: 1.05;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: #cbd5e1;
+      max-width: 780px;
+      line-height: 1.45;
+      font-size: 1rem;
+    }
+
+    .version-badge {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.18);
+      color: #e0f2fe;
+      padding: 10px 14px;
+      border-radius: 999px;
+      white-space: nowrap;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    main {
+      padding: 8px 18px 34px;
+    }
+
+    .notice {
+      background: #fff7ed;
+      color: #7c2d12;
+      border: 1px solid #fed7aa;
+      border-left: 7px solid var(--warn);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      box-shadow: 0 10px 25px rgba(124, 45, 18, .08);
+      margin: 12px 0 18px;
+      line-height: 1.45;
+      font-size: .95rem;
+      text-align: justify;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid.two {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .grid.four {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid rgba(226, 232, 240, 0.92);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    }
+
+    .panel-title {
+      margin: 0;
+      font-size: 1.16rem;
+      letter-spacing: -0.02em;
+    }
+
+    .panel-subtitle {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: .91rem;
+      line-height: 1.35;
+    }
+
+    .panel-body {
+      padding: 18px 20px 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 750;
+      color: #334155;
+      margin-bottom: 7px;
+      font-size: .88rem;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--input-line);
+      background: var(--input);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 12px 12px;
+      font: inherit;
+      outline: none;
+      transition: border .16s, box-shadow .16s, transform .16s;
+      min-height: 46px;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--brand);
+      box-shadow: 0 0 0 4px rgba(14, 165, 233, .16);
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { opacity: .55; }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .row.three {
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .row.auto {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+    }
+
+    .btnbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      min-height: 44px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .14s, filter .14s, background .14s;
+    }
+
+    button:hover { transform: translateY(-1px); filter: brightness(1.01); }
+    button:active { transform: translateY(0); }
+
+    .primary { background: var(--brand); color: #fff; }
+    .secondary { background: #e0f2fe; color: var(--brand-dark); }
+    .ghost { background: #f1f5f9; color: #334155; }
+    .danger { background: #fee2e2; color: #991b1b; }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .result-card {
+      background: var(--muted-card);
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      padding: 14px;
+      min-height: 98px;
+    }
+
+    .result-card strong {
+      display: block;
+      color: #475569;
+      font-size: .82rem;
+      margin-bottom: 7px;
+      line-height: 1.2;
+    }
+
+    .value {
+      font-size: 1.45rem;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: #0f172a;
+    }
+
+    .unit {
+      font-size: .86rem;
+      color: var(--muted);
+      font-weight: 800;
+      margin-left: 2px;
+    }
+
+    .mini {
+      font-size: .81rem;
+      color: var(--muted);
+      line-height: 1.35;
+      margin-top: 5px;
+    }
+
+    .formula {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 14px;
+      padding: 12px 14px;
+      color: #475569;
+      line-height: 1.45;
+      font-size: .88rem;
+      margin-top: 12px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 18px 0;
+    }
+
+    .tab {
+      background: rgba(255,255,255,.85);
+      border: 1px solid rgba(203,213,225,.9);
+      color: #334155;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-weight: 900;
+    }
+
+    .tab.active {
+      background: #082f49;
+      color: #e0f2fe;
+      border-color: #075985;
+    }
+
+    .hidden { display: none !important; }
+
+    .calc-output {
+      background: linear-gradient(135deg, #ecfeff 0%, #f0f9ff 100%);
+      border: 1px solid #bae6fd;
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-top: 14px;
+    }
+
+    .big-result {
+      font-size: clamp(2rem, 6vw, 3.8rem);
+      font-weight: 950;
+      letter-spacing: -0.06em;
+      color: #075985;
+      line-height: 1;
+      margin: 8px 0 4px;
+    }
+
+    .output-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      border-top: 1px solid rgba(14, 165, 233, .18);
+      padding-top: 10px;
+      margin-top: 10px;
+      color: #0f172a;
+      line-height: 1.35;
+    }
+
+    .output-line span:first-child {
+      color: #475569;
+      font-weight: 800;
+    }
+
+    .warning-list {
+      margin: 14px 0 0;
+      padding-left: 18px;
+      color: #92400e;
+      line-height: 1.45;
+      font-size: .91rem;
+    }
+
+    .warning-list:not(:empty) {
+      background: #fffbeb;
+      border: 1px solid #fed7aa;
+      border-left: 6px solid var(--warn);
+      border-radius: 14px;
+      padding: 12px 14px 12px 30px;
+    }
+
+    .warning-list li + li { margin-top: 6px; }
+
+    .warning-list.safety-high:not(:empty) {
+      background: #fef2f2;
+      border-color: #fecaca;
+      border-left-color: var(--danger);
+      color: #7f1d1d;
+    }
+
+    .patient-mode-note {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1e3a8a;
+      border-radius: 14px;
+      padding: 11px 13px;
+      margin: 0 0 14px;
+      line-height: 1.42;
+      font-size: .9rem;
+    }
+
+    .safety-banner {
+      background: #f8fafc;
+      border: 1px solid #dbeafe;
+      border-left: 6px solid #0ea5e9;
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      color: #334155;
+      line-height: 1.42;
+      font-size: .9rem;
+    }
+
+    .safety-banner strong { color: #0f172a; }
+
+    .quick-summary-bar {
+      position: sticky;
+      top: 0;
+      z-index: 18;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 8px 0 10px;
+      margin: 12px 0 4px;
+      background: rgba(248, 250, 252, .92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      scrollbar-width: thin;
+    }
+
+    .quick-chip {
+      flex: 0 0 auto;
+      background: #ffffff;
+      border: 1px solid #dbeafe;
+      border-radius: 999px;
+      padding: 8px 11px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, .08);
+      color: #334155;
+      font-size: .82rem;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .quick-chip span {
+      color: #075985;
+      font-weight: 950;
+    }
+
+    .jump-result {
+      background: #ecfeff;
+      color: #0e7490;
+    }
+
+    .compact-field {
+      margin-bottom: 8px;
+    }
+
+    .tabs {
+      position: sticky;
+      top: 54px;
+      z-index: 17;
+      padding: 8px 0;
+      background: rgba(248, 250, 252, .88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      scrollbar-width: thin;
+    }
+
+    .tab {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+
+
+    .recent-wrapper {
+      margin-top: 14px;
+    }
+
+    .recent-details {
+      background: #f8fafc;
+      border: 1px solid #dbeafe;
+      border-radius: var(--radius);
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .recent-details summary {
+      cursor: pointer;
+      list-style: none;
+      padding: 13px 15px;
+      font-weight: 900;
+      color: #075985;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      user-select: none;
+    }
+
+    .recent-details summary::-webkit-details-marker { display: none; }
+
+    .recent-details summary::after {
+      content: "▾";
+      font-size: .95rem;
+      color: #0369a1;
+      transition: transform .18s ease;
+    }
+
+    .recent-details[open] summary::after {
+      transform: rotate(180deg);
+    }
+
+    .recent-list {
+      display: grid;
+      gap: 10px;
+      padding: 0 15px 15px;
+    }
+
+    .recent-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 12px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, .06);
+    }
+
+    .recent-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 7px;
+    }
+
+    .recent-card strong {
+      color: #0f172a;
+      font-size: .98rem;
+    }
+
+    .recent-time {
+      color: #64748b;
+      font-size: .78rem;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .recent-text {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      margin: 0;
+      color: #334155;
+      line-height: 1.45;
+      font-family: inherit;
+      font-size: .9rem;
+    }
+
+    .recent-actions {
+      padding: 0 15px 15px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .recent-actions button {
+      min-height: 38px;
+      padding: 8px 12px;
+      font-size: .84rem;
+    }
+
+    .section-end-notice {
+      margin-top: 16px;
+      box-shadow: none;
+      text-align: justify;
+    }
+
+    .ok-text { color: var(--ok); font-weight: 800; }
+    .warn-text { color: #b45309; font-weight: 800; }
+    .danger-text { color: var(--danger); font-weight: 800; }
+
+    .presets {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .sri-preset-filter {
+      background: #f8fafc;
+      border: 1px solid #dbeafe;
+      border-radius: var(--radius);
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .sri-preset-filter .field {
+      margin-bottom: 8px;
+    }
+
+    .sri-presets {
+      margin-bottom: 0;
+    }
+
+    .sri-presets-empty {
+      display: none;
+      color: var(--muted);
+      font-size: .88rem;
+      line-height: 1.35;
+      padding: 8px 2px 0;
+    }
+
+    .pill-button {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      font-size: .86rem;
+      padding: 10px;
+      min-height: auto;
+      line-height: 1.22;
+    }
+
+    .pill-meta {
+      display: inline-block;
+      color: #64748b;
+      font-size: .74rem;
+      font-weight: 800;
+      margin-top: 3px;
+    }
+
+
+
+    .scale-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .scale-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: var(--radius);
+      padding: 15px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, .07);
+    }
+
+    .scale-card.wide {
+      grid-column: 1 / -1;
+    }
+
+    .scale-summary {
+      cursor: pointer;
+      list-style: none;
+      position: relative;
+      padding-right: 28px;
+      user-select: none;
+    }
+
+    .scale-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .scale-summary::after {
+      content: "▾";
+      position: absolute;
+      right: 2px;
+      top: 4px;
+      color: #0369a1;
+      font-weight: 950;
+      transition: transform .18s ease;
+    }
+
+    .scale-card[open] > .scale-summary::after {
+      transform: rotate(180deg);
+    }
+
+    .scale-summary .scale-head {
+      margin-bottom: 0;
+    }
+
+    .scale-body {
+      margin-top: 12px;
+    }
+
+    .scale-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .scale-title {
+      margin: 0;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+      color: #0f172a;
+    }
+
+    .scale-subtitle {
+      margin: 4px 0 0;
+      color: #64748b;
+      font-size: .82rem;
+      line-height: 1.32;
+    }
+
+    .scale-tag {
+      flex: 0 0 auto;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #1d4ed8;
+      border-radius: 999px;
+      padding: 6px 9px;
+      font-size: .72rem;
+      font-weight: 950;
+      white-space: nowrap;
+    }
+
+    .scale-fields {
+      display: grid;
+      gap: 10px;
+    }
+
+    .scale-fields.two {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .scale-fields.three {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .scale-fields .field {
+      margin-bottom: 0;
+    }
+
+    .scale-result {
+      margin-top: 12px;
+      border-radius: 14px;
+      border: 1px solid #dbeafe;
+      background: #f8fafc;
+      padding: 12px 13px;
+      line-height: 1.42;
+      color: #334155;
+      font-size: .9rem;
+    }
+
+    .scale-result strong {
+      display: block;
+      color: #0f172a;
+      font-size: 1.05rem;
+      margin-bottom: 3px;
+    }
+
+    .scale-result.ok {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+      color: #166534;
+    }
+
+    .scale-result.warn {
+      background: #fffbeb;
+      border-color: #fde68a;
+      color: #92400e;
+    }
+
+    .scale-result.danger {
+      background: #fef2f2;
+      border-color: #fecaca;
+      color: #7f1d1d;
+    }
+
+    .tbsa-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .tbsa-button {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      min-height: 38px;
+      padding: 8px;
+      font-size: .78rem;
+      line-height: 1.2;
+    }
+
+    .template-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .template-box {
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 14px;
+      padding: 12px;
+      color: #334155;
+      line-height: 1.45;
+      font-size: .88rem;
+    }
+
+    .template-box strong {
+      color: #0f172a;
+    }
+
+
+    .footer {
+      color: #475569;
+      font-size: .84rem;
+      line-height: 1.45;
+      padding: 18px 2px 0;
+    }
+
+    .footer a { color: #075985; font-weight: 800; }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 20px;
+      transform: translateX(-50%) translateY(20px);
+      opacity: 0;
+      background: #0f172a;
+      color: #fff;
+      padding: 11px 14px;
+      border-radius: 999px;
+      box-shadow: 0 12px 32px rgba(0,0,0,.25);
+      transition: opacity .22s, transform .22s;
+      z-index: 10;
+      font-weight: 800;
+      font-size: .9rem;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+
+
+    #patientPanel.collapsed .panel-body {
+      display: none;
+    }
+
+    .compact-summary {
+      display: none;
+      margin: 8px 0 0;
+      color: #475569;
+      font-size: .88rem;
+      line-height: 1.35;
+      font-weight: 750;
+    }
+
+    #patientPanel.collapsed .compact-summary {
+      display: block;
+    }
+
+    .bottom-notice {
+      margin: 18px 0 0;
+    }
+
+    @media (max-width: 980px) {
+      .grid.two, .grid.three, .grid.four, .result-grid { grid-template-columns: 1fr 1fr; }
+      .presets { grid-template-columns: 1fr 1fr; }
+      .hero { grid-template-columns: 1fr; }
+      .version-badge { justify-self: start; }
+    }
+
+    @media (max-width: 640px) {
+      header { padding-top: 22px; }
+      .grid.two, .grid.three, .grid.four, .result-grid, .row, .row.three, .row.auto { grid-template-columns: 1fr; }
+      .panel-head { align-items: flex-start; flex-direction: column; }
+      .presets { grid-template-columns: 1fr; }
+      button { width: 100%; }
+      .output-line { flex-direction: column; gap: 3px; }
+      .big-result { font-size: 3rem; }
+    }
+
+    @media (max-width: 640px) {
+      main { padding-left: 12px; padding-right: 12px; }
+      .subtitle { font-size: .92rem; }
+      .panel-head { padding: 14px 15px; }
+      .panel-body { padding: 14px 15px 16px; }
+      .quick-summary-bar {
+        top: 0;
+        margin: 8px -12px 2px;
+        padding: 8px 12px 10px;
+      }
+      .tabs {
+        top: 48px;
+        margin: 10px -12px 14px;
+        padding: 8px 12px;
+      }
+      .tab { padding: 9px 12px; font-size: .86rem; width: auto; }
+      .tabs .tab { width: auto; }
+      .presets { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .pill-button { padding: 10px 8px; font-size: .82rem; }
+      .result-grid { grid-template-columns: 1fr 1fr; gap: 9px; }
+      .result-card { min-height: 82px; padding: 11px; }
+      .result-card strong { font-size: .76rem; }
+      .value { font-size: 1.18rem; }
+      .big-result { font-size: 2.7rem; }
+      .formula, .patient-mode-note, .safety-banner, .notice { font-size: .86rem; }
+      .scale-grid, .template-grid { grid-template-columns: 1fr; }
+      .scale-fields.two, .scale-fields.three { grid-template-columns: 1fr; }
+      .tbsa-buttons { grid-template-columns: 1fr 1fr; }
+      .scale-card { padding: 13px; }
+      textarea { min-height: 72px; }
+    }
+
+    @media (max-width: 380px) {
+      .result-grid { grid-template-columns: 1fr; }
+      .presets { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      header { color: #000; padding-top: 0; }
+      .tabs, .btnbar, .notice, .footer, .toast { display: none; }
+      .panel { box-shadow: none; break-inside: avoid; }
+      main { padding: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap hero">
+      <div>
+        <h1>Calculadora TUM Intermedio</h1>
+        <p class="subtitle">Herramienta educativa para cálculo de peso, infusiones, SRI, ventilador mecánico y escalas rápidas</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="panel" id="patientPanel">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">1. Datos generales del paciente</h2>
+          <p class="panel-subtitle">Estos valores alimentan automáticamente los cálculos de infusión, SRI y ventilador.</p>
+          <p class="compact-summary" id="patientCompactSummary">Sin datos del paciente.</p>
+        </div>
+        <div class="btnbar">
+          <button class="ghost" id="togglePatientBtn" type="button" aria-expanded="true" aria-controls="patientBody">Ocultar datos</button>
+          <button class="secondary" id="copyPatientBtn" type="button">Copiar resumen</button>
+          <button class="danger" id="clearBtn" type="button">Limpiar campos</button>
+        </div>
+      </div>
+      <div class="panel-body" id="patientBody">
+        <div class="grid four">
+          <div class="field">
+            <label for="patientType">Tipo de paciente</label>
+            <select id="patientType">
+              <option value="adult">Adulto</option>
+              <option value="pediatric">Pediátrico</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="sex">Sexo para fórmula</label>
+            <select id="sex">
+              <option value="male">Masculino</option>
+              <option value="female">Femenino</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="heightCm">Talla (cm)</label>
+            <input id="heightCm" type="number" inputmode="decimal" placeholder="Ej. 175" min="80" max="240" step="0.1" />
+          </div>
+          <div class="field">
+            <label for="actualWeight">Peso real (kg)</label>
+            <input id="actualWeight" type="number" inputmode="decimal" placeholder="Ej. 73" min="1" max="350" step="0.1" />
+          </div>
+        </div>
+
+        <div class="result-grid">
+          <div class="result-card">
+            <strong>Peso ideal</strong>
+            <div><span class="value" id="ibwOut">—</span><span class="unit">kg</span></div>
+          </div>
+          <div class="result-card">
+            <strong>Peso predicho</strong>
+            <div><span class="value" id="pbwOut">—</span><span class="unit">kg</span></div>
+          </div>
+          <div class="result-card">
+            <strong>Peso ajustado</strong>
+            <div><span class="value" id="abwOut">—</span><span class="unit">kg</span></div>
+            <div class="mini">IBW + 0.4 × (peso real − IBW).</div>
+          </div>
+          <div class="result-card">
+            <strong>IMC</strong>
+            <div><span class="value" id="bmiOut">—</span><span class="unit">kg/m²</span></div>
+            <div class="mini" id="bmiCategory">Ingresa talla y peso.</div>
+          </div>
+        </div>
+
+        <div class="patient-mode-note" id="patientModeNotice">
+          Modo adulto activo: la calculadora muestra peso ideal, peso predicho, peso ajustado e IMC. En fármacos de alto riesgo, confirma siempre qué peso solicita tu protocolo.
+        </div>
+
+        <div class="formula" id="patientFormula">
+          Fórmulas usadas: peso predicho = base + 0.91 × (talla cm − 152.4), con base 50 en hombres y 45 en mujeres. Peso ideal = talla(m)² × 23 en hombres y talla(m)² × 21.5 en mujeres. IMC = peso kg / talla m². En modo pediátrico, estas fórmulas adultas de peso ideal/predicho se desactivan y se recomienda usar peso real o manual según protocolo.
+        </div>
+      </div>
+    </section>
+
+    <div class="quick-summary-bar" id="quickSummaryBar" aria-label="Resumen rápido del paciente">
+      <div class="quick-chip">Paciente: <span id="quickPatientType">Adulto</span></div>
+      <div class="quick-chip">Peso real: <span id="quickActualWeight">—</span></div>
+      <div class="quick-chip">Peso predicho: <span id="quickPredictedWeight">—</span></div>
+      <div class="quick-chip">Peso ideal: <span id="quickIdealWeight">—</span></div>
+      <div class="quick-chip">IMC: <span id="quickBmi">—</span></div>
+    </div>
+
+    <div class="tabs" aria-label="Navegación de módulos">
+      <button class="tab active" data-tab="infusions" type="button">Infusiones y aminas</button>
+      <button class="tab" data-tab="sri" type="button">SRI</button>
+      <button class="tab" data-tab="ventilator" type="button">Ventilador</button>
+      <button class="tab" data-tab="scales" type="button">Escalas rápidas</button>
+      <button class="tab" data-tab="formulas" type="button">Fórmulas usadas</button>
+    </div>
+
+    <section class="panel tab-content" id="infusionsTab">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">2. Calculadora de infusiones / aminas</h2>
+          <p class="panel-subtitle">Calcula mL/h a partir de concentración, dosis objetivo y peso seleccionado.</p>
+        </div>
+        <div class="btnbar">
+          <button class="jump-result" type="button" data-jump-target="infusionOutput">Ver resultado</button>
+          <button class="secondary" id="copyInfusionBtn" type="button">Copiar resultado</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="presets" aria-label="Presets rápidos de medicamento">
+          <button class="pill-button" type="button" data-preset="norepi">Norepinefrina</button>
+          <button class="pill-button" type="button" data-preset="epi">Epinefrina</button>
+          <button class="pill-button" type="button" data-preset="dopamine">Dopamina</button>
+          <button class="pill-button" type="button" data-preset="dobutamine">Dobutamina</button>
+          <button class="pill-button" type="button" data-preset="vasopressin">Vasopresina</button>
+          <button class="pill-button" type="button" data-preset="midazolam">Midazolam</button>
+          <button class="pill-button" type="button" data-preset="fentanyl">Fentanilo</button>
+          <button class="pill-button" type="button" data-preset="propofol">Propofol</button>
+        </div>
+
+        <div class="grid two">
+          <div>
+            <div class="row">
+              <div class="field">
+                <label for="drugName">Medicamento</label>
+                <input id="drugName" type="text" placeholder="Ej. Norepinefrina" autocomplete="off" />
+              </div>
+              <div class="field">
+                <label for="weightSource">Peso para cálculo</label>
+                <select id="weightSource">
+                  <option value="actual">Peso real</option>
+                  <option value="ibw">Peso ideal</option>
+                  <option value="pbw">Peso predicho</option>
+                  <option value="abw">Peso ajustado</option>
+                  <option value="manual">Manual</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="field">
+                <label for="manualWeight">Peso manual (kg)</label>
+                <input id="manualWeight" type="number" inputmode="decimal" placeholder="Solo si eliges manual" min="1" max="350" step="0.1" />
+              </div>
+              <div class="field">
+                <label for="selectedWeightOut">Peso usado</label>
+                <input id="selectedWeightOut" type="text" readonly placeholder="—" />
+              </div>
+            </div>
+
+            <div class="row three">
+              <div class="field">
+                <label for="drugAmount">Cantidad</label>
+                <input id="drugAmount" type="number" inputmode="decimal" placeholder="Ej. 4" min="0" step="0.001" />
+              </div>
+              <div class="field">
+                <label for="drugUnit">Unidad</label>
+                <select id="drugUnit">
+                  <option value="mg">mg</option>
+                  <option value="mcg">mcg</option>
+                  <option value="units">unidades</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="totalVolume">Volumen total (mL)</label>
+                <input id="totalVolume" type="number" inputmode="decimal" placeholder="Ej. 100" min="0" step="0.1" />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="row">
+              <div class="field">
+                <label for="targetDose">Dosis objetivo</label>
+                <input id="targetDose" type="number" inputmode="decimal" placeholder="Ej. 0.1" min="0" step="0.001" />
+              </div>
+              <div class="field">
+                <label for="doseUnit">Unidad de dosis</label>
+                <select id="doseUnit">
+                  <option value="mcgkgmin">mcg/kg/min</option>
+                  <option value="mcgkgphr">mcg/kg/h</option>
+                  <option value="mcgmin">mcg/min</option>
+                  <option value="mcghr">mcg/h</option>
+                  <option value="mgkgmin">mg/kg/min</option>
+                  <option value="mgkgphr">mg/kg/h</option>
+                  <option value="mgmin">mg/min</option>
+                  <option value="mghr">mg/h</option>
+                  <option value="unitsmin">unidades/min</option>
+                  <option value="unitshr">unidades/h</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="notes">Notas de preparación / protocolo</label>
+              <textarea id="notes" rows="3" placeholder="Ej. Verificar concentración con protocolo local antes de administrar."></textarea>
+            </div>
+
+            <div class="btnbar">
+              <button class="primary" id="calcInfusionBtn" type="button">Calcular infusión</button>
+              <button class="ghost" id="clearInfusionBtn" type="button">Limpiar infusión</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="calc-output" id="infusionOutput" aria-live="polite">
+          <div class="mini">Resultado principal</div>
+          <div class="big-result"><span id="rateOut">—</span> <span style="font-size:.42em; letter-spacing:0;">mL/h</span></div>
+          <div id="resultStatus" class="mini">Ingresa datos o elige un preset.</div>
+          <div class="output-line">
+            <span>Concentración final</span>
+            <strong id="concentrationOut">—</strong>
+          </div>
+          <div class="output-line">
+            <span>Dosis equivalente</span>
+            <strong id="equivDoseOut">—</strong>
+          </div>
+          <div class="output-line">
+            <span>Duración estimada de solución</span>
+            <strong id="solutionDurationOut">—</strong>
+          </div>
+          <div class="output-line">
+            <span>Fórmula aplicada</span>
+            <strong id="infusionFormulaOut">—</strong>
+          </div>
+        </div>
+        <div class="recent-wrapper">
+          <details class="recent-details" id="infusionRecentDetails">
+            <summary>Cálculos recientes</summary>
+            <div class="recent-list" id="infusionRecentList">
+              <div class="mini">Aún no hay cálculos recientes.</div>
+            </div>
+            <div class="recent-actions">
+              <button class="ghost" id="clearInfusionRecentBtn" type="button">Borrar recientes</button>
+            </div>
+          </details>
+        </div>
+        <ul class="warning-list" id="warningsOut"></ul>
+      </div>
+    </section>
+
+
+    <section class="panel tab-content hidden" id="sriTab">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">3. Secuencia Rápida de Intubación (SRI)</h2>
+          <p class="panel-subtitle">Calcula dosis total y volumen a cargar según peso, dosis objetivo y concentración disponible.</p>
+        </div>
+        <div class="btnbar">
+          <button class="jump-result" type="button" data-jump-target="sriOutput">Ver resultado</button>
+          <button class="secondary" id="copySriBtn" type="button">Copiar resultado</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="safety-banner" id="sriSafetyBanner">
+          <strong>Seguridad clínica:</strong> calcula y verifica sedante, analgésico y bloqueador por separado. Si usas un bloqueador neuromuscular, deja preparado el plan de sedación/analgesia posterior.
+        </div>
+        <div class="sri-preset-filter" aria-label="Filtro de medicamentos SRI">
+          <div class="field">
+            <label for="sriPresetCategory">Categoría de medicamento</label>
+            <select id="sriPresetCategory">
+              <option value="premedication">Premedicación / pretratamiento</option>
+              <option value="induction">Inductores / sedantes</option>
+              <option value="paralytic">Bloqueadores neuromusculares</option>
+              <option value="postintubation">Sedación / analgesia posterior</option>
+              <option value="all">Todos los medicamentos</option>
+            </select>
+          </div>
+          <div class="mini" id="sriPresetCategoryHint">Elige un preset editable según el momento de uso.</div>
+          <div class="presets sri-presets" id="sriPresetButtons" aria-label="Presets rápidos de SRI">
+            <button class="pill-button" type="button" data-sri-preset="atropine" data-sri-groups="premedication">Atropina<br><span class="pill-meta">Anticolinérgico</span></button>
+            <button class="pill-button" type="button" data-sri-preset="fentanyl" data-sri-groups="premedication postintubation">Fentanilo<br><span class="pill-meta">Analgesia</span></button>
+            <button class="pill-button" type="button" data-sri-preset="lidocaine" data-sri-groups="premedication">Lidocaína<br><span class="pill-meta">Pretratamiento</span></button>
+            <button class="pill-button" type="button" data-sri-preset="ketamine" data-sri-groups="induction postintubation">Ketamina<br><span class="pill-meta">Inductor</span></button>
+            <button class="pill-button" type="button" data-sri-preset="etomidate" data-sri-groups="induction">Etomidato<br><span class="pill-meta">Inductor</span></button>
+            <button class="pill-button" type="button" data-sri-preset="propofol" data-sri-groups="induction postintubation">Propofol<br><span class="pill-meta">Sedante</span></button>
+            <button class="pill-button" type="button" data-sri-preset="midazolam" data-sri-groups="induction postintubation">Midazolam<br><span class="pill-meta">Sedante</span></button>
+            <button class="pill-button" type="button" data-sri-preset="rocuronium" data-sri-groups="paralytic">Rocuronio<br><span class="pill-meta">Bloqueador</span></button>
+            <button class="pill-button" type="button" data-sri-preset="succinylcholine" data-sri-groups="paralytic">Succinilcolina<br><span class="pill-meta">Bloqueador</span></button>
+            <button class="pill-button" type="button" data-sri-preset="vecuronium" data-sri-groups="paralytic">Vecuronio<br><span class="pill-meta">Bloqueador</span></button>
+          </div>
+          <div class="sri-presets-empty" id="sriPresetEmpty">No hay medicamentos en esta categoría.</div>
+        </div>
+
+        <div class="grid two">
+          <div>
+            <div class="row">
+              <div class="field">
+                <label for="sriDrugName">Fármaco</label>
+                <input id="sriDrugName" type="text" placeholder="Ej. Ketamina" autocomplete="off" />
+              </div>
+              <div class="field">
+                <label for="sriCategory">Tipo / uso</label>
+                <select id="sriCategory">
+                  <option value="Premedicación / anticolinérgico">Premedicación / anticolinérgico</option>
+                  <option value="Analgesia / pretratamiento">Analgesia / pretratamiento</option>
+                  <option value="Inductor / sedante">Inductor / sedante</option>
+                  <option value="Bloqueador neuromuscular">Bloqueador neuromuscular</option>
+                  <option value="Sedación posterior">Sedación posterior</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="field">
+                <label for="sriWeightSource">Peso para cálculo</label>
+                <select id="sriWeightSource">
+                  <option value="actual">Peso real</option>
+                  <option value="ibw">Peso ideal</option>
+                  <option value="pbw">Peso predicho</option>
+                  <option value="abw">Peso ajustado</option>
+                  <option value="manual">Manual</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="sriManualWeight">Peso manual (kg)</label>
+                <input id="sriManualWeight" type="number" inputmode="decimal" placeholder="Solo si eliges manual" min="1" max="350" step="0.1" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="sriSelectedWeightOut">Peso usado</label>
+              <input id="sriSelectedWeightOut" type="text" readonly placeholder="—" />
+            </div>
+          </div>
+
+          <div>
+            <div class="row">
+              <div class="field">
+                <label for="sriDose">Dosis objetivo</label>
+                <input id="sriDose" type="number" inputmode="decimal" placeholder="Ej. 1.5" min="0" step="0.001" />
+              </div>
+              <div class="field">
+                <label for="sriDoseUnit">Unidad de dosis</label>
+                <select id="sriDoseUnit">
+                  <option value="mgkg">mg/kg</option>
+                  <option value="mcgkg">mcg/kg</option>
+                  <option value="mg">mg totales</option>
+                  <option value="mcg">mcg totales</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="field">
+                <label for="sriConcentration">Concentración</label>
+                <input id="sriConcentration" type="number" inputmode="decimal" placeholder="Ej. 50" min="0" step="0.001" />
+              </div>
+              <div class="field">
+                <label for="sriConcentrationUnit">Unidad concentración</label>
+                <select id="sriConcentrationUnit">
+                  <option value="mgml">mg/mL</option>
+                  <option value="mcgml">mcg/mL</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="sriNotes">Notas SRI / protocolo</label>
+              <textarea id="sriNotes" rows="3" placeholder="Ej. Confirmar fármaco, concentración, vía IV/IO y protocolo local."></textarea>
+            </div>
+
+            <div class="btnbar">
+              <button class="primary" id="calcSriBtn" type="button">Calcular SRI</button>
+              <button class="ghost" id="clearSriBtn" type="button">Limpiar SRI</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="calc-output" id="sriOutput" aria-live="polite">
+          <div class="mini">Resultado principal</div>
+          <div class="big-result"><span id="sriVolumeOut">—</span> <span style="font-size:.42em; letter-spacing:0;">mL</span></div>
+          <div id="sriStatus" class="mini">Ingresa datos o elige un preset.</div>
+          <div class="output-line">
+            <span>Dosis total</span>
+            <strong id="sriTotalDoseOut">—</strong>
+          </div>
+          <div class="output-line">
+            <span>Concentración usada</span>
+            <strong id="sriConcentrationOut">—</strong>
+          </div>
+          <div class="output-line">
+            <span>Fórmula aplicada</span>
+            <strong id="sriFormulaOut">—</strong>
+          </div>
+        </div>
+        <div class="recent-wrapper">
+          <details class="recent-details" id="sriRecentDetails">
+            <summary>Cálculos recientes</summary>
+            <div class="recent-list" id="sriRecentList">
+              <div class="mini">Aún no hay cálculos recientes.</div>
+            </div>
+            <div class="recent-actions">
+              <button class="ghost" id="clearSriRecentBtn" type="button">Borrar recientes</button>
+            </div>
+          </details>
+        </div>
+        <ul class="warning-list" id="sriWarningsOut"></ul>
+        <div class="notice section-end-notice">
+          <strong>Uso seguro:</strong> este módulo solo realiza matemáticas de dosis y volumen. No decide si el paciente debe intubarse ni cuál fármaco es el indicado. Ajusta siempre a protocolo local, contraindicaciones, estado hemodinámico, alergias, disponibilidad y supervisión médica.
+        </div>
+      </div>
+    </section>
+
+
+    <section class="panel tab-content hidden" id="ventilatorTab">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">4. Ventilador / volumen tidal</h2>
+          <p class="panel-subtitle">Calcula VT por peso predicho, volumen minuto estimado y parámetros iniciales editables.</p>
+        </div>
+        <div class="btnbar">
+          <button class="jump-result" type="button" data-jump-target="ventOutput">Ver resultado</button>
+          <button class="secondary" id="copyVentBtn" type="button">Copiar resultado</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="safety-banner" id="ventSafetyBanner">
+          <strong>Seguridad clínica:</strong> el volumen tidal es un punto de partida. Revalora con SpO₂, EtCO₂, auscultación, presión de vía aérea, expansión torácica y gasometría cuando esté disponible.
+        </div>
+        <div class="presets" aria-label="Perfiles rápidos de ventilador">
+          <button class="pill-button" type="button" data-vent-preset="protective">Protectora 6 mL/kg</button>
+          <button class="pill-button" type="button" data-vent-preset="general">Adulto 6–8 mL/kg</button>
+          <button class="pill-button" type="button" data-vent-preset="ards">SDRA 4–6 mL/kg</button>
+          <button class="pill-button" type="button" data-vent-preset="obstructive">EPOC / asma</button>
+        </div>
+
+        <div class="grid two">
+          <div>
+            <div class="row">
+              <div class="field">
+                <label for="ventProfile">Perfil / contexto</label>
+                <select id="ventProfile">
+                  <option value="Ventilación protectora">Ventilación protectora</option>
+                  <option value="Adulto general">Adulto general</option>
+                  <option value="Sospecha de SDRA">Sospecha de SDRA</option>
+                  <option value="EPOC / asma obstructivo">EPOC / asma obstructivo</option>
+                  <option value="Personalizado">Personalizado</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="ventMode">Modo ventilatorio</label>
+                <select id="ventMode">
+                  <option value="VCV / A-C">VCV / A-C</option>
+                  <option value="PCV / A-C">PCV / A-C</option>
+                  <option value="SIMV">SIMV</option>
+                  <option value="CPAP / PSV">CPAP / PSV</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="field">
+                <label for="ventWeightSource">Peso para VT</label>
+                <select id="ventWeightSource">
+                  <option value="pbw">Peso predicho</option>
+                  <option value="ibw">Peso ideal</option>
+                  <option value="actual">Peso real</option>
+                  <option value="abw">Peso ajustado</option>
+                  <option value="manual">Manual</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="ventManualWeight">Peso manual (kg)</label>
+                <input id="ventManualWeight" type="number" inputmode="decimal" placeholder="Solo si eliges manual" min="1" max="350" step="0.1" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="ventSelectedWeightOut">Peso usado para VT</label>
+              <input id="ventSelectedWeightOut" type="text" readonly placeholder="—" />
+            </div>
+
+            <div class="row three">
+              <div class="field">
+                <label for="vtMlKg">VT objetivo</label>
+                <select id="vtMlKg">
+                  <option value="4">4 mL/kg</option>
+                  <option value="5">5 mL/kg</option>
+                  <option value="6" selected>6 mL/kg</option>
+                  <option value="7">7 mL/kg</option>
+                  <option value="8">8 mL/kg</option>
+                  <option value="manual">Manual</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="vtManualMlKg">VT manual (mL/kg)</label>
+                <input id="vtManualMlKg" type="number" inputmode="decimal" placeholder="Ej. 6.5" min="2" max="12" step="0.1" />
+              </div>
+              <div class="field">
+                <label for="respRate">FR programada (/min)</label>
+                <input id="respRate" type="number" inputmode="numeric" placeholder="Ej. 16" min="1" max="60" step="1" />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="row three">
+              <div class="field">
+                <label for="fio2">FiO₂ (%)</label>
+                <input id="fio2" type="number" inputmode="decimal" placeholder="Ej. 100" min="21" max="100" step="1" />
+              </div>
+              <div class="field">
+                <label for="peep">PEEP (cmH₂O)</label>
+                <input id="peep" type="number" inputmode="decimal" placeholder="Ej. 5" min="0" max="30" step="1" />
+              </div>
+              <div class="field">
+                <label for="ieRatio">Relación I:E</label>
+                <input id="ieRatio" type="text" placeholder="Ej. 1:2" autocomplete="off" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="field">
+                <label for="pressureLimit">Límite / meta presión</label>
+                <input id="pressureLimit" type="text" placeholder="Ej. Pplat <30 cmH₂O" autocomplete="off" />
+              </div>
+              <div class="field">
+                <label for="spo2Goal">Meta SpO₂ / oxigenación</label>
+                <input id="spo2Goal" type="text" placeholder="Ej. 92–96% o protocolo local" autocomplete="off" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="ventNotes">Notas ventilador / protocolo</label>
+              <textarea id="ventNotes" rows="3" placeholder="Ej. Revalorar con SatO₂, EtCO₂, gasometría, auscultación y presión plateau."></textarea>
+            </div>
+
+            <div class="btnbar">
+              <button class="primary" id="calcVentBtn" type="button">Calcular ventilador</button>
+              <button class="ghost" id="clearVentBtn" type="button">Limpiar ventilador</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-grid" style="margin-top:18px;">
+          <div class="result-card">
+            <strong>VT 4 mL/kg</strong>
+            <div><span class="value" id="vt4Out">—</span><span class="unit">mL</span></div>
+            <div class="mini">Referencia baja / SDRA.</div>
+          </div>
+          <div class="result-card">
+            <strong>VT 6 mL/kg</strong>
+            <div><span class="value" id="vt6Out">—</span><span class="unit">mL</span></div>
+            <div class="mini">Protección pulmonar.</div>
+          </div>
+          <div class="result-card">
+            <strong>VT 7 mL/kg</strong>
+            <div><span class="value" id="vt7Out">—</span><span class="unit">mL</span></div>
+            <div class="mini">Referencia intermedia.</div>
+          </div>
+          <div class="result-card">
+            <strong>VT 8 mL/kg</strong>
+            <div><span class="value" id="vt8Out">—</span><span class="unit">mL</span></div>
+            <div class="mini">Límite alto habitual.</div>
+          </div>
+        </div>
+
+        <div class="calc-output" id="ventOutput" aria-live="polite">
+          <div class="mini">Resultado principal</div>
+          <div class="big-result"><span id="ventVtOut">—</span> <span style="font-size:.42em; letter-spacing:0;">mL</span></div>
+          <div id="ventStatus" class="mini">Ingresa talla/peso o elige un perfil.</div>
+          <div class="output-line">
+            <span>Volumen minuto estimado</span>
+            <strong id="minuteVentOut">—</strong>
+          </div>
+          <div class="output-line">
+            <span>Rango protector 6–8 mL/kg</span>
+            <strong id="vtRangeOut">—</strong>
+          </div>
+          <div class="output-line">
+            <span>Parámetros escritos</span>
+            <strong id="ventSettingsOut">—</strong>
+          </div>
+          <div class="output-line">
+            <span>Fórmula aplicada</span>
+            <strong id="ventFormulaOut">—</strong>
+          </div>
+        </div>
+        <ul class="warning-list" id="ventWarningsOut"></ul>
+        <div class="notice section-end-notice">
+          <strong>Uso seguro:</strong> este módulo apoya cálculos de ventilación inicial. No ajusta por gasometría, mecánica pulmonar, presión plateau, auto-PEEP, asincronías ni respuesta clínica. Confirma siempre con protocolo local y supervisión médica.
+        </div>
+      </div>
+    </section>
+
+
+    <section class="panel tab-content hidden" id="scalesTab">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">5. Escalas rápidas</h2>
+          <p class="panel-subtitle">Apoyo educativo para valoración inicial: neurología, sepsis, perfusión, EVC, quemaduras, APGAR y SAMPLE.</p>
+        </div>
+        <div class="btnbar">
+          <button class="ghost" id="clearScalesBtn" type="button">Limpiar escalas</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="notice" style="margin-top:0;">
+          <strong>Uso educativo:</strong> las escalas orientan la valoración y el registro, pero no sustituyen protocolos locales, criterio clínico, exploración completa ni comunicación médica. Repite la valoración si cambia el estado del paciente.
+        </div>
+
+        <div class="scale-grid">
+          <details class="scale-card">
+            <summary class="scale-summary">
+              <div class="scale-head">
+                <div>
+                  <h3 class="scale-title">Glasgow Coma Scale</h3>
+                  <p class="scale-subtitle">Suma apertura ocular, respuesta verbal y respuesta motora.</p>
+                </div>
+                <span class="scale-tag">Neurológico</span>
+              </div>
+            </summary>
+            <div class="scale-body">
+              <div class="scale-fields">
+                <div class="field">
+                  <label for="gcsEye">Ocular (E)</label>
+                  <select id="gcsEye">
+                    <option value="">Seleccionar</option>
+                    <option value="4">4 · Espontánea</option>
+                    <option value="3">3 · Al estímulo verbal</option>
+                    <option value="2">2 · Al dolor</option>
+                    <option value="1">1 · No abre</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="gcsVerbal">Verbal (V)</label>
+                  <select id="gcsVerbal">
+                    <option value="">Seleccionar</option>
+                    <option value="5">5 · Orientado</option>
+                    <option value="4">4 · Confuso</option>
+                    <option value="3">3 · Palabras inapropiadas</option>
+                    <option value="2">2 · Sonidos incomprensibles</option>
+                    <option value="1">1 · No responde</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="gcsMotor">Motora (M)</label>
+                  <select id="gcsMotor">
+                    <option value="">Seleccionar</option>
+                    <option value="6">6 · Obedece órdenes</option>
+                    <option value="5">5 · Localiza dolor</option>
+                    <option value="4">4 · Retira al dolor</option>
+                    <option value="3">3 · Flexión anormal</option>
+                    <option value="2">2 · Extensión anormal</option>
+                    <option value="1">1 · No responde</option>
+                  </select>
+                </div>
+              </div>
+              <div class="scale-result" id="gcsResult" aria-live="polite"><strong>—</strong>Selecciona E, V y M.</div>
+            </div>
+          </details>
+
+          <details class="scale-card">
+            <summary class="scale-summary">
+              <div class="scale-head">
+                <div>
+                  <h3 class="scale-title">qSOFA</h3>
+                  <p class="scale-subtitle">Pantalla rápida de riesgo en sospecha de infección/sepsis.</p>
+                </div>
+                <span class="scale-tag">Sepsis</span>
+              </div>
+            </summary>
+            <div class="scale-body">
+              <div class="scale-fields three">
+                <div class="field">
+                  <label for="qsofaRr">FR (/min)</label>
+                  <input id="qsofaRr" type="number" min="0" max="80" step="1" placeholder="Ej. 24" />
+                </div>
+                <div class="field">
+                  <label for="qsofaSbp">PAS (mmHg)</label>
+                  <input id="qsofaSbp" type="number" min="0" max="300" step="1" placeholder="Ej. 95" />
+                </div>
+                <div class="field">
+                  <label for="qsofaMentation">Mentación</label>
+                  <select id="qsofaMentation">
+                    <option value="">Seleccionar</option>
+                    <option value="0">Normal</option>
+                    <option value="1">Alterada</option>
+                  </select>
+                </div>
+              </div>
+              <div class="scale-result" id="qsofaResult" aria-live="polite"><strong>—</strong>Ingresa FR, PAS y mentación.</div>
+            </div>
+          </details>
+
+          <details class="scale-card">
+            <summary class="scale-summary">
+              <div class="scale-head">
+                <div>
+                  <h3 class="scale-title">Índice de choque</h3>
+                  <p class="scale-subtitle">FC dividida entre presión arterial sistólica.</p>
+                </div>
+                <span class="scale-tag">Perfusión</span>
+              </div>
+            </summary>
+            <div class="scale-body">
+              <div class="scale-fields two">
+                <div class="field">
+                  <label for="shockHr">FC (/min)</label>
+                  <input id="shockHr" type="number" min="0" max="280" step="1" placeholder="Ej. 120" />
+                </div>
+                <div class="field">
+                  <label for="shockSbp">PAS (mmHg)</label>
+                  <input id="shockSbp" type="number" min="1" max="300" step="1" placeholder="Ej. 90" />
+                </div>
+              </div>
+              <div class="scale-result" id="shockResult" aria-live="polite"><strong>—</strong>Ingresa FC y PAS.</div>
+            </div>
+          </details>
+
+          <details class="scale-card wide">
+            <summary class="scale-summary">
+              <div class="scale-head">
+                <div>
+                  <h3 class="scale-title">NIHSS</h3>
+                  <p class="scale-subtitle">Escala neurológica para sospecha de EVC. Registra hallazgos y activa protocolo local si hay déficit.</p>
+                </div>
+                <span class="scale-tag">EVC</span>
+              </div>
+            </summary>
+            <div class="scale-body">
+              <div class="formula" style="margin-top:0;">
+                <strong>Nota:</strong> esta versión calcula el puntaje con los 15 apartados principales. Si un rubro no es valorable por intubación, amputación u otra condición, registra la excepción según protocolo y no uses el resultado como NIHSS formal definitivo.
+              </div>
+              <div class="scale-fields three">
+                <div class="field">
+                  <label for="nihssLoc">1a. Nivel de conciencia</label>
+                  <select id="nihssLoc">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Alerta</option>
+                    <option value="1">1 · Somnoliento, responde con estímulo menor</option>
+                    <option value="2">2 · Requiere estímulo repetido/fuerte</option>
+                    <option value="3">3 · Coma o no responde</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="nihssQuestions">1b. Preguntas LOC</label>
+                  <select id="nihssQuestions">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Ambas correctas</option>
+                    <option value="1">1 · Una correcta</option>
+                    <option value="2">2 · Ninguna correcta</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="nihssCommands">1c. Órdenes LOC</label>
+                  <select id="nihssCommands">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Ambas correctas</option>
+                    <option value="1">1 · Una correcta</option>
+                    <option value="2">2 · Ninguna correcta</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="nihssGaze">2. Mirada conjugada</label>
+                  <select id="nihssGaze">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Normal</option>
+                    <option value="1">1 · Parálisis parcial de la mirada</option>
+                    <option value="2">2 · Desviación forzada / paresia total</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="nihssVisual">3. Campos visuales</label>
+                  <select id="nihssVisual">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Sin pérdida visual</option>
+                    <option value="1">1 · Hemianopsia parcial</option>
+                    <option value="2">2 · Hemianopsia completa</option>
+                    <option value="3">3 · Ceguera bilateral</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="nihssFacial">4. Paresia facial</label>
+                  <select id="nihssFacial">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Movimiento normal</option>
+                    <option value="1">1 · Paresia menor</option>
+                    <option value="2">2 · Paresia parcial</option>
+                    <option value="3">3 · Parálisis completa unilateral/bilateral</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="nihssArmLeft">5a. Brazo izquierdo</label>
+                  <select id="nihssArmLeft">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Sin caída</option>
+                    <option value="1">1 · Cae antes de 10 s, no toca cama</option>
+                    <option value="2">2 · Algún esfuerzo contra gravedad</option>
+                    <option value="3">3 · Sin esfuerzo contra gravedad</option>
+                    <option value="4">4 · Sin movimiento</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="nihssArmRight">5b. Brazo derecho</label>
+                  <select id="nihssArmRight">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Sin caída</option>
+                    <option value="1">1 · Cae antes de 10 s, no toca cama</option>
+                    <option value="2">2 · Algún esfuerzo contra gravedad</option>
+                    <option value="3">3 · Sin esfuerzo contra gravedad</option>
+                    <option value="4">4 · Sin movimiento</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="nihssLegLeft">6a. Pierna izquierda</label>
+                  <select id="nihssLegLeft">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Sin caída</option>
+                    <option value="1">1 · Cae antes de 5 s, no toca cama</option>
+                    <option value="2">2 · Algún esfuerzo contra gravedad</option>
+                    <option value="3">3 · Sin esfuerzo contra gravedad</option>
+                    <option value="4">4 · Sin movimiento</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="nihssLegRight">6b. Pierna derecha</label>
+                  <select id="nihssLegRight">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Sin caída</option>
+                    <option value="1">1 · Cae antes de 5 s, no toca cama</option>
+                    <option value="2">2 · Algún esfuerzo contra gravedad</option>
+                    <option value="3">3 · Sin esfuerzo contra gravedad</option>
+                    <option value="4">4 · Sin movimiento</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="nihssAtaxia">7. Ataxia de extremidades</label>
+                  <select id="nihssAtaxia">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Ausente</option>
+                    <option value="1">1 · Presente en una extremidad</option>
+                    <option value="2">2 · Presente en dos extremidades</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="nihssSensory">8. Sensibilidad</label>
+                  <select id="nihssSensory">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Normal</option>
+                    <option value="1">1 · Pérdida leve/moderada</option>
+                    <option value="2">2 · Pérdida severa/total</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="nihssLanguage">9. Lenguaje</label>
+                  <select id="nihssLanguage">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Sin afasia</option>
+                    <option value="1">1 · Afasia leve/moderada</option>
+                    <option value="2">2 · Afasia severa</option>
+                    <option value="3">3 · Mudo/global</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="nihssDysarthria">10. Disartria</label>
+                  <select id="nihssDysarthria">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Normal</option>
+                    <option value="1">1 · Leve/moderada</option>
+                    <option value="2">2 · Severa/ininteligible</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="nihssNeglect">11. Extinción / inatención</label>
+                  <select id="nihssNeglect">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Sin negligencia</option>
+                    <option value="1">1 · Extinción/inatención parcial</option>
+                    <option value="2">2 · Inatención profunda</option>
+                  </select>
+                </div>
+              </div>
+              <div class="scale-result" id="nihssResult" aria-live="polite"><strong>—</strong>Completa los apartados NIHSS.</div>
+            </div>
+          </details>
+
+          <details class="scale-card">
+            <summary class="scale-summary">
+              <div class="scale-head">
+                <div>
+                  <h3 class="scale-title">APGAR</h3>
+                  <p class="scale-subtitle">Registro al minuto, 5 minutos y según evolución del RN.</p>
+                </div>
+                <span class="scale-tag">Neonato</span>
+              </div>
+            </summary>
+            <div class="scale-body">
+              <div class="scale-fields">
+                <div class="field">
+                  <label for="apgarAppearance">Apariencia / color</label>
+                  <select id="apgarAppearance">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Azul o pálido</option>
+                    <option value="1">1 · Cuerpo rosado, extremidades azules</option>
+                    <option value="2">2 · Completamente rosado</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="apgarPulse">Pulso / FC</label>
+                  <select id="apgarPulse">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Ausente</option>
+                    <option value="1">1 · Menor de 100/min</option>
+                    <option value="2">2 · 100/min o más</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="apgarGrimace">Gesticulación / reflejo</label>
+                  <select id="apgarGrimace">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Sin respuesta</option>
+                    <option value="1">1 · Mueca</option>
+                    <option value="2">2 · Tos, estornudo o llanto</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="apgarActivity">Actividad / tono</label>
+                  <select id="apgarActivity">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Flácido</option>
+                    <option value="1">1 · Algo de flexión</option>
+                    <option value="2">2 · Movimiento activo</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="apgarRespiration">Respiración</label>
+                  <select id="apgarRespiration">
+                    <option value="">Seleccionar</option>
+                    <option value="0">0 · Ausente</option>
+                    <option value="1">1 · Lenta o irregular</option>
+                    <option value="2">2 · Buen llanto</option>
+                  </select>
+                </div>
+              </div>
+              <div class="scale-result" id="apgarResult" aria-live="polite"><strong>—</strong>Selecciona los 5 componentes.</div>
+            </div>
+          </details>
+
+          <details class="scale-card wide">
+            <summary class="scale-summary">
+              <div class="scale-head">
+                <div>
+                  <h3 class="scale-title">Quemaduras: %SCQ, Parkland y Brooke</h3>
+                  <p class="scale-subtitle">Calcula líquidos iniciales con % de superficie corporal quemada. En pediatría confirma mantenimiento y fórmula local.</p>
+                </div>
+                <span class="scale-tag">Trauma</span>
+              </div>
+            </summary>
+            <div class="scale-body">
+              <div class="grid two">
+                <div>
+                  <div class="scale-fields two">
+                    <div class="field">
+                      <label for="burnWeight">Peso (kg)</label>
+                      <input id="burnWeight" type="number" min="1" max="350" step="0.1" placeholder="Ej. 70" />
+                    </div>
+                    <div class="field">
+                      <label for="burnTbsa">SCQ / TBSA (%)</label>
+                      <input id="burnTbsa" type="number" min="0" max="100" step="0.5" placeholder="Ej. 18" />
+                    </div>
+                    <div class="field">
+                      <label for="burnHoursSince">Horas desde quemadura</label>
+                      <input id="burnHoursSince" type="number" min="0" max="48" step="0.1" placeholder="Ej. 2" />
+                    </div>
+                    <div class="field">
+                      <label for="burnGivenMl">Cristaloide ya administrado (mL)</label>
+                      <input id="burnGivenMl" type="number" min="0" step="1" placeholder="Opcional" />
+                    </div>
+                  </div>
+                  <div class="btnbar" style="margin-top:10px;">
+                    <button class="ghost" id="usePatientWeightBurnBtn" type="button">Usar peso real</button>
+                    <button class="ghost" id="resetTbsaBtn" type="button">Reiniciar %SCQ</button>
+                  </div>
+                  <div class="scale-result" id="burnResult" aria-live="polite"><strong>—</strong>Ingresa peso y %SCQ.</div>
+                </div>
+                <div>
+                  <div class="formula" style="margin-top:0;">
+                    <strong>Regla de los 9 adulto como ayuda rápida</strong><br>
+                    Usa los botones para sumar regiones completas al %SCQ. Parkland usa 4 mL × kg × %SCQ; Brooke modificado usa 2 mL × kg × %SCQ. Ajusta siempre a diuresis, perfusión y protocolo.
+                  </div>
+                  <div class="tbsa-buttons" aria-label="Suma rápida de regla de los 9">
+                    <button class="tbsa-button" type="button" data-burn-add="9">Cabeza/cuello 9%</button>
+                    <button class="tbsa-button" type="button" data-burn-add="18">Tronco anterior 18%</button>
+                    <button class="tbsa-button" type="button" data-burn-add="18">Tronco posterior 18%</button>
+                    <button class="tbsa-button" type="button" data-burn-add="9">Brazo der. 9%</button>
+                    <button class="tbsa-button" type="button" data-burn-add="9">Brazo izq. 9%</button>
+                    <button class="tbsa-button" type="button" data-burn-add="18">Pierna der. 18%</button>
+                    <button class="tbsa-button" type="button" data-burn-add="18">Pierna izq. 18%</button>
+                    <button class="tbsa-button" type="button" data-burn-add="1">Periné 1%</button>
+                    <button class="tbsa-button" type="button" data-burn-add="4.5">Medio brazo 4.5%</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details class="scale-card wide">
+            <summary class="scale-summary">
+              <div class="scale-head">
+                <div>
+                  <h3 class="scale-title">SAMPLE</h3>
+                  <p class="scale-subtitle">Recordatorio rápido para historia clínica prehospitalaria. No calcula puntaje.</p>
+                </div>
+                <span class="scale-tag">Historia</span>
+              </div>
+            </summary>
+            <div class="scale-body">
+              <div class="template-box">
+                <strong>S</strong> Signos/síntomas · <strong>A</strong> Alergias · <strong>M</strong> Medicamentos · <strong>P</strong> Antecedentes · <strong>L</strong> Última ingesta · <strong>E</strong> Evento relacionado.
+              </div>
+            </div>
+          </details>
+        </div>        </div>
+      </div>
+    </section>
+
+
+    <section class="panel tab-content hidden" id="formulasTab">
+      <div class="panel-head">
+        <div>
+          <h2 class="panel-title">Fórmulas implementadas</h2>
+          <p class="panel-subtitle">Se muestran para poder revisar manualmente cada cálculo.</p>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="grid two">
+          <div class="formula">
+            <strong>Peso ideal y peso predicho</strong><br>
+            Adulto: peso predicho = hombres 50 + 0.91 × (talla cm − 152.4); mujeres 45 + 0.91 × (talla cm − 152.4).<br><br>
+            Adulto: peso ideal = hombres talla(m)² × 23; mujeres talla(m)² × 21.5.<br><br>
+            En modo pediátrico, la calculadora desactiva estos pesos adultos y recomienda usar peso real o manual según protocolo.
+          </div>
+          <div class="formula">
+            <strong>IMC</strong><br>
+            IMC = peso real en kg / (talla en metros)².<br><br>
+            Se incluye como referencia general; no sustituye valoración clínica individual.
+          </div>
+          <div class="formula">
+            <strong>Infusión dependiente de peso</strong><br>
+            mL/h = dosis × peso × 60 / concentración.<br><br>
+            Ejemplo en mcg/kg/min: se convierte a mcg/h y se divide entre mcg/mL.
+          </div>
+          <div class="formula">
+            <strong>Infusión no dependiente de peso</strong><br>
+            mL/h = dosis por hora / concentración.<br><br>
+            Si la dosis está por minuto, primero se multiplica × 60.
+          </div>
+          <div class="formula">
+            <strong>SRI / bolo dependiente de peso</strong><br>
+            Dosis total = dosis × peso.<br>
+            Volumen a cargar = dosis total / concentración.<br><br>
+            La herramienta convierte automáticamente mg ↔ mcg cuando la concentración y la dosis están en unidades diferentes.
+          </div>
+          <div class="formula">
+            <strong>Ventilador / volumen tidal</strong><br>
+            VT objetivo = peso predicho o seleccionado × mL/kg elegido.<br>
+            Volumen minuto estimado = VT en litros × FR.<br><br>
+            Se muestran referencias a 4, 6, 7 y 8 mL/kg para revisión rápida. No sustituye gasometría, monitoreo ni ajuste clínico.
+          </div>
+          <div class="formula">
+            <strong>Escalas rápidas</strong><br>
+            NIHSS = suma de 15 apartados principales, rango 0–42.<br>
+            Parkland = 4 mL × kg × %SCQ en 24 h; Brooke modificado = 2 mL × kg × %SCQ en 24 h.<br><br>
+            Ambas fórmulas de quemaduras son estimaciones iniciales y deben ajustarse a perfusión, diuresis y protocolo local.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="notice bottom-notice">
+      <strong>Importante:</strong> esta herramienta es de apoyo educativo para cálculos. Verifica siempre el medicamento, la concentración, la dosis, los protocolos locales, la indicación médica y la condición clínica del paciente antes de administrar fármacos o usar el resultado en campo. Los datos se guardan localmente en este dispositivo hasta limpiar campos; no se mandan a ningún servidor.
+    </div>
+
+    <div class="footer">
+      <strong>Notas:</strong> Las preparaciones y dosis precargadas son únicamente atajos editables para practicar cálculos y deben confirmarse con el protocolo vigente. Para fármacos de alto riesgo, revisa dos veces concentración, unidades y peso usado. Fórmulas basadas en uso educativo habitual de peso predicho, peso ideal, IMC adulto y VT por mL/kg de peso seleccionado.
+    </div>
+  </main>
+
+  <div class="toast" id="toast">Copiado</div>
+
+  <script>
+    const STORAGE_KEY = 'tum_calc_v1_v9_state';
+    const RECENT_KEY = `${STORAGE_KEY}_recent_calculations`;
+    const RECENT_LIMIT = 4;
+
+    const $ = (id) => document.getElementById(id);
+    const patientInputs = ['patientType', 'sex', 'heightCm', 'actualWeight'];
+    const infusionInputs = ['drugName', 'weightSource', 'manualWeight', 'drugAmount', 'drugUnit', 'totalVolume', 'targetDose', 'doseUnit', 'notes'];
+    const sriInputs = ['sriPresetCategory', 'sriDrugName', 'sriCategory', 'sriWeightSource', 'sriManualWeight', 'sriDose', 'sriDoseUnit', 'sriConcentration', 'sriConcentrationUnit', 'sriNotes'];
+    const ventInputs = ['ventProfile', 'ventMode', 'ventWeightSource', 'ventManualWeight', 'vtMlKg', 'vtManualMlKg', 'respRate', 'fio2', 'peep', 'ieRatio', 'pressureLimit', 'spo2Goal', 'ventNotes'];
+    const scaleInputs = ['gcsEye', 'gcsVerbal', 'gcsMotor', 'qsofaRr', 'qsofaSbp', 'qsofaMentation', 'shockHr', 'shockSbp', 'nihssLoc', 'nihssQuestions', 'nihssCommands', 'nihssGaze', 'nihssVisual', 'nihssFacial', 'nihssArmLeft', 'nihssArmRight', 'nihssLegLeft', 'nihssLegRight', 'nihssAtaxia', 'nihssSensory', 'nihssLanguage', 'nihssDysarthria', 'nihssNeglect', 'apgarAppearance', 'apgarPulse', 'apgarGrimace', 'apgarActivity', 'apgarRespiration', 'burnWeight', 'burnTbsa', 'burnHoursSince', 'burnGivenMl'];
+    const allInputs = [...patientInputs, ...infusionInputs, ...sriInputs, ...ventInputs, ...scaleInputs];
+
+    const presets = {
+      norepi: {
+        drugName: 'Norepinefrina', drugAmount: 4, drugUnit: 'mg', totalVolume: 100, targetDose: 0.1, doseUnit: 'mcgkgmin',
+        notes: 'Preset editable. Verificar preparación y protocolo local antes de administrar.'
+      },
+      epi: {
+        drugName: 'Epinefrina', drugAmount: 1, drugUnit: 'mg', totalVolume: 100, targetDose: 0.05, doseUnit: 'mcgkgmin',
+        notes: 'Preset editable. Verificar preparación y protocolo local antes de administrar.'
+      },
+      dopamine: {
+        drugName: 'Dopamina', drugAmount: 400, drugUnit: 'mg', totalVolume: 100, targetDose: 10, doseUnit: 'mcgkgmin',
+        notes: 'Preset editable. Verificar preparación y protocolo local antes de administrar.'
+      },
+      dobutamine: {
+        drugName: 'Dobutamina', drugAmount: 250, drugUnit: 'mg', totalVolume: 100, targetDose: 5, doseUnit: 'mcgkgmin',
+        notes: 'Preset editable. Verificar preparación y protocolo local antes de administrar.'
+      },
+      vasopressin: {
+        drugName: 'Vasopresina', drugAmount: 20, drugUnit: 'units', totalVolume: 100, targetDose: 0.03, doseUnit: 'unitsmin',
+        notes: 'Preset editable. Verificar concentración, unidad y protocolo local antes de administrar.'
+      },
+      midazolam: {
+        drugName: 'Midazolam', drugAmount: 50, drugUnit: 'mg', totalVolume: 50, targetDose: 3, doseUnit: 'mghr',
+        notes: 'Preset editable para práctica de cálculo de infusión.'
+      },
+      fentanyl: {
+        drugName: 'Fentanilo', drugAmount: 500, drugUnit: 'mcg', totalVolume: 50, targetDose: 50, doseUnit: 'mcghr',
+        notes: 'Preset editable para práctica de cálculo de infusión.'
+      },
+      propofol: {
+        drugName: 'Propofol', drugAmount: 1000, drugUnit: 'mg', totalVolume: 100, targetDose: 1, doseUnit: 'mgkgphr',
+        notes: 'Preset editable. Confirmar concentración y criterio clínico.'
+      }
+    };
+
+    const sriPresets = {
+      ketamine: {
+        sriDrugName: 'Ketamina', sriCategory: 'Inductor / sedante', sriWeightSource: 'actual', sriDose: 1.5, sriDoseUnit: 'mgkg', sriConcentration: 50, sriConcentrationUnit: 'mgml',
+        sriNotes: 'Preset editable para cálculo. Verificar indicación, concentración y protocolo local.'
+      },
+      etomidate: {
+        sriDrugName: 'Etomidato', sriCategory: 'Inductor / sedante', sriWeightSource: 'actual', sriDose: 0.3, sriDoseUnit: 'mgkg', sriConcentration: 2, sriConcentrationUnit: 'mgml',
+        sriNotes: 'Preset editable para cálculo. Verificar indicación, concentración y protocolo local.'
+      },
+      propofol: {
+        sriDrugName: 'Propofol', sriCategory: 'Inductor / sedante', sriWeightSource: 'actual', sriDose: 1.5, sriDoseUnit: 'mgkg', sriConcentration: 10, sriConcentrationUnit: 'mgml',
+        sriNotes: 'Preset editable. Puede causar hipotensión; verificar criterio clínico y protocolo.'
+      },
+      midazolam: {
+        sriDrugName: 'Midazolam', sriCategory: 'Inductor / sedante', sriWeightSource: 'actual', sriDose: 0.1, sriDoseUnit: 'mgkg', sriConcentration: 5, sriConcentrationUnit: 'mgml',
+        sriNotes: 'Preset editable para cálculo. Verificar indicación, concentración y protocolo local.'
+      },
+      fentanyl: {
+        sriDrugName: 'Fentanilo', sriCategory: 'Analgesia / pretratamiento', sriWeightSource: 'actual', sriDose: 2, sriDoseUnit: 'mcgkg', sriConcentration: 50, sriConcentrationUnit: 'mcgml',
+        sriNotes: 'Preset editable para cálculo. Verificar indicación, concentración y protocolo local.'
+      },
+      lidocaine: {
+        sriDrugName: 'Lidocaína', sriCategory: 'Analgesia / pretratamiento', sriWeightSource: 'actual', sriDose: 1.5, sriDoseUnit: 'mgkg', sriConcentration: 20, sriConcentrationUnit: 'mgml',
+        sriNotes: 'Preset editable. Confirmar si tu protocolo la contempla antes de usarla.'
+      },
+      atropine: {
+        sriDrugName: 'Atropina', sriCategory: 'Premedicación / anticolinérgico', sriWeightSource: 'actual', sriDose: 0.02, sriDoseUnit: 'mgkg', sriConcentration: 1, sriConcentrationUnit: 'mgml',
+        sriNotes: 'Preset editable para premedicación/anticolinérgico en SRI. No aplica dosis mínima o máxima automática; confirma concentración, dosis límite e indicación con tu protocolo local.'
+      },
+      rocuronium: {
+        sriDrugName: 'Rocuronio', sriCategory: 'Bloqueador neuromuscular', sriWeightSource: 'actual', sriDose: 1, sriDoseUnit: 'mgkg', sriConcentration: 10, sriConcentrationUnit: 'mgml',
+        sriNotes: 'Preset editable. Requiere sedación/analgesia adecuada y monitoreo posterior.'
+      },
+      succinylcholine: {
+        sriDrugName: 'Succinilcolina', sriCategory: 'Bloqueador neuromuscular', sriWeightSource: 'actual', sriDose: 1.5, sriDoseUnit: 'mgkg', sriConcentration: 20, sriConcentrationUnit: 'mgml',
+        sriNotes: 'Preset editable. Verificar contraindicaciones como hiperkalemia, quemaduras o enfermedad neuromuscular.'
+      },
+      vecuronium: {
+        sriDrugName: 'Vecuronio', sriCategory: 'Bloqueador neuromuscular', sriWeightSource: 'actual', sriDose: 0.1, sriDoseUnit: 'mgkg', sriConcentration: 1, sriConcentrationUnit: 'mgml',
+        sriNotes: 'Preset editable. Verificar reconstitución, concentración final y protocolo local.'
+      }
+    };
+
+    const ventPresets = {
+      protective: {
+        ventProfile: 'Ventilación protectora', ventMode: 'VCV / A-C', ventWeightSource: 'pbw', vtMlKg: '6', respRate: 16, fio2: 100, peep: 5, ieRatio: '1:2', pressureLimit: 'Pplat <30 cmH₂O', spo2Goal: 'Según protocolo local',
+        ventNotes: 'Perfil editable. Revalorar con SatO₂, EtCO₂, gasometría, auscultación, presión plateau y respuesta clínica.'
+      },
+      general: {
+        ventProfile: 'Adulto general', ventMode: 'VCV / A-C', ventWeightSource: 'pbw', vtMlKg: '7', respRate: 14, fio2: 100, peep: 5, ieRatio: '1:2', pressureLimit: 'Evitar presiones elevadas', spo2Goal: 'Según protocolo local',
+        ventNotes: 'Perfil editable de referencia. Considerar 6–8 mL/kg de peso predicho y ajustar al paciente.'
+      },
+      ards: {
+        ventProfile: 'Sospecha de SDRA', ventMode: 'VCV / A-C', ventWeightSource: 'pbw', vtMlKg: '6', respRate: 20, fio2: 100, peep: 8, ieRatio: '1:2', pressureLimit: 'Pplat <30 cmH₂O', spo2Goal: 'Según protocolo local',
+        ventNotes: 'Perfil editable. En SDRA se suele priorizar VT bajo, presión plateau y ajuste con gasometría/oxigenación.'
+      },
+      obstructive: {
+        ventProfile: 'EPOC / asma obstructivo', ventMode: 'VCV / A-C', ventWeightSource: 'pbw', vtMlKg: '6', respRate: 10, fio2: 100, peep: 5, ieRatio: '1:3 a 1:5', pressureLimit: 'Vigilar auto-PEEP', spo2Goal: 'Según protocolo local',
+        ventNotes: 'Perfil editable. Considerar tiempo espiratorio prolongado y vigilar atrapamiento aéreo/auto-PEEP.'
+      }
+    };
+
+    function n(id) {
+      const field = $(id);
+      if (!field) return null;
+      const value = parseFloat(field.value);
+      return Number.isFinite(value) ? value : null;
+    }
+
+    function currentPatientType() {
+      const field = $('patientType');
+      return field ? field.value : 'adult';
+    }
+
+    function isPediatricMode() {
+      return currentPatientType() === 'pediatric';
+    }
+
+    function renderWarnings(targetId, warnings) {
+      const target = $(targetId);
+      if (!target) return;
+      target.innerHTML = warnings.map(w => `<li>${escapeHtml(w)}</li>`).join('');
+      const highRisk = warnings.some(w => /bloqueador|neuromuscular|pediátrico|hipotensión|muy alta|muy alto|menor a 0\.1|no aplica/i.test(w));
+      target.classList.toggle('safety-high', highRisk);
+    }
+
+    function addSharedMedicationSafety(warnings, drugName, context = '') {
+      const name = (drugName || '').toLowerCase();
+      if (isPediatricMode()) warnings.push('Modo pediátrico: confirma peso real/estimado, dosis por kg, dosis máxima, concentración y presentación disponible antes de administrar.');
+      if (/rocuronio|succinilcolina|vecuronio|bloqueador/.test(name)) warnings.push('Bloqueador neuromuscular: no aporta sedación ni analgesia. Confirmar sedación/analgesia posterior y monitoreo continuo.');
+      if (/propofol|midazolam/.test(name)) warnings.push('Sedante: vigilar depresión respiratoria e hipotensión, especialmente en pacientes inestables.');
+      if (/fentanilo/.test(name)) warnings.push('Opioide: vigilar ventilación, presión arterial y rigidez torácica si se administra rápido o en dosis altas.');
+      if (/ketamina/.test(name)) warnings.push('Ketamina: vigilar respuesta hemodinámica, secreciones y necesidad de sedación/analgesia posterior.');
+      if (/atropina/.test(name)) warnings.push('Atropina: esta calculadora no aplica dosis mínima ni máxima automática; confirma límites e indicación con tu protocolo.');
+      if (/succinilcolina/.test(name)) warnings.push('Succinilcolina: revisar contraindicaciones de tu protocolo antes de usarla.');
+      if (context === 'infusion' && /norepinefrina|epinefrina|dopamina|dobutamina|vasopresina/.test(name)) warnings.push('Vasopresor/inotrópico: requiere vigilancia estrecha, titulación y confirmación de concentración/unidad antes de iniciar.');
+    }
+
+    function syncPatientTypeRecommendations() {
+      if (!isPediatricMode()) return;
+      ['weightSource', 'sriWeightSource', 'ventWeightSource'].forEach(id => {
+        const field = $(id);
+        if (!field) return;
+        if (['ibw', 'pbw', 'abw'].includes(field.value)) field.value = 'actual';
+      });
+    }
+
+    function updatePatientModeUI() {
+      const formula = $('patientFormula');
+      const notice = $('patientModeNotice');
+      if (!formula || !notice) return;
+      if (isPediatricMode()) {
+        notice.innerHTML = '<strong>Modo pediátrico activo:</strong> se desactivan los cálculos adultos de peso ideal, peso predicho y peso ajustado. Para medicamentos y ventilación usa peso real o manual y confirma dosis máximas/protocolo local.';
+        formula.textContent = 'Fórmulas usadas: en modo pediátrico no se calculan peso ideal/predicho con fórmulas adultas. IMC = peso kg / talla m². Usa peso real, estimado o manual según protocolo pediátrico.';
+      } else {
+        notice.innerHTML = '<strong>Modo adulto activo:</strong> la calculadora muestra peso ideal, peso predicho, peso ajustado e IMC. En fármacos de alto riesgo, confirma siempre qué peso solicita tu protocolo.';
+        formula.textContent = 'Fórmulas usadas: peso predicho = base + 0.91 × (talla cm − 152.4), con base 50 en hombres y 45 en mujeres. Peso ideal = talla(m)² × 23 en hombres y talla(m)² × 21.5 en mujeres. IMC = peso kg / talla m². En embarazadas, amputaciones o tallas extremas se requiere valoración específica.';
+      }
+    }
+
+    function rounded(value, decimals = 1) {
+      if (!Number.isFinite(value)) return '—';
+      return Number(value.toFixed(decimals)).toString();
+    }
+
+    function rateFormat(value) {
+      if (!Number.isFinite(value)) return '—';
+      if (Math.abs(value) < 1) return value.toFixed(3).replace(/0+$/, '').replace(/\.$/, '');
+      if (Math.abs(value) < 10) return value.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
+      return value.toFixed(1).replace(/\.0$/, '');
+    }
+
+    function bmiCategory(bmi) {
+      if (!Number.isFinite(bmi)) return 'Ingresa talla y peso.';
+      if (bmi < 18.5) return 'Bajo peso';
+      if (bmi < 25) return 'Rango normal';
+      if (bmi < 30) return 'Sobrepeso';
+      return 'Obesidad';
+    }
+
+    function calculatePatient() {
+      syncPatientTypeRecommendations();
+      const sex = $('sex').value;
+      const height = n('heightCm');
+      const actual = n('actualWeight');
+      let ibw = null, pbw = null, abw = null, bmi = null;
+
+      if (height && !isPediatricMode()) {
+        const meters = height / 100;
+        const pbwBase = sex === 'male' ? 50 : 45;
+        const ibwFactor = sex === 'male' ? 23 : 21.5;
+        pbw = pbwBase + 0.91 * (height - 152.4);
+        ibw = meters * meters * ibwFactor;
+        if (actual) {
+          abw = ibw + 0.4 * (actual - ibw);
+        }
+      }
+
+      if (height && actual) {
+        const meters = height / 100;
+        bmi = actual / (meters * meters);
+      }
+
+      updatePatientModeUI();
+      $('ibwOut').textContent = ibw ? rounded(ibw, 1) : '—';
+      $('pbwOut').textContent = pbw ? rounded(pbw, 1) : '—';
+      $('abwOut').textContent = abw ? rounded(abw, 1) : '—';
+      $('bmiOut').textContent = bmi ? rounded(bmi, 1) : '—';
+      $('bmiCategory').textContent = bmiCategory(bmi);
+      updatePatientCompactSummary();
+      updateQuickSummaryBar();
+
+      updateSelectedWeight();
+      updateSriSelectedWeight();
+      updateVentSelectedWeight();
+      updateVentReferenceCards();
+      return { ibw, pbw, abw, bmi, actual, patientType: currentPatientType() };
+    }
+
+    function selectedWeightValue() {
+      const source = $('weightSource').value;
+      const patient = calculatePatientShallow();
+      if (source === 'actual') return patient.actual;
+      if (source === 'ibw') return patient.ibw;
+      if (source === 'pbw') return patient.pbw;
+      if (source === 'abw') return patient.abw;
+      if (source === 'manual') return n('manualWeight');
+      return null;
+    }
+
+    function calculatePatientShallow() {
+      const sex = $('sex').value;
+      const height = n('heightCm');
+      const actual = n('actualWeight');
+      let ibw = null, pbw = null, abw = null, bmi = null;
+      if (height && !isPediatricMode()) {
+        const meters = height / 100;
+        const pbwBase = sex === 'male' ? 50 : 45;
+        const ibwFactor = sex === 'male' ? 23 : 21.5;
+        pbw = pbwBase + 0.91 * (height - 152.4);
+        ibw = meters * meters * ibwFactor;
+        if (actual) abw = ibw + 0.4 * (actual - ibw);
+      }
+      if (height && actual) {
+        const meters = height / 100;
+        bmi = actual / (meters * meters);
+      }
+      return { ibw, pbw, abw, bmi, actual, patientType: currentPatientType() };
+    }
+
+
+
+
+
+    function updatePatientCompactSummary() {
+      const field = $('patientCompactSummary');
+      if (!field) return;
+      const p = calculatePatientShallow();
+      const parts = [];
+      const typeText = isPediatricMode() ? 'Pediátrico' : 'Adulto';
+      const sexText = $('sex').value === 'male' ? 'Masculino' : 'Femenino';
+      const height = $('heightCm').value;
+      const actual = $('actualWeight').value;
+      parts.push(typeText);
+      parts.push(sexText);
+      if (height) parts.push(`${height} cm`);
+      if (actual) parts.push(`${actual} kg real`);
+      if (p.pbw) parts.push(`Predicho ${rounded(p.pbw, 1)} kg`);
+      if (p.bmi) parts.push(`IMC ${rounded(p.bmi, 1)}`);
+      field.textContent = parts.length ? parts.join(' · ') : 'Sin datos del paciente.';
+    }
+
+    function updateQuickSummaryBar() {
+      const p = calculatePatientShallow();
+      const typeField = $('quickPatientType');
+      if (!typeField) return;
+      $('quickPatientType').textContent = isPediatricMode() ? 'Pediátrico' : 'Adulto';
+      $('quickActualWeight').textContent = p.actual ? `${rounded(p.actual, 1)} kg` : '—';
+      $('quickPredictedWeight').textContent = p.pbw ? `${rounded(p.pbw, 1)} kg` : (isPediatricMode() ? 'No aplica' : '—');
+      $('quickIdealWeight').textContent = p.ibw ? `${rounded(p.ibw, 1)} kg` : (isPediatricMode() ? 'No aplica' : '—');
+      $('quickBmi').textContent = p.bmi ? rounded(p.bmi, 1) : '—';
+    }
+
+    function scrollToElement(id) {
+      const target = $(id);
+      if (!target) return;
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function calculateAndShowInfusion() {
+      const result = calculateInfusion({ addRecent: true });
+      if (result) scrollToElement('infusionOutput');
+    }
+
+    function calculateAndShowSRI() {
+      const result = calculateSRI({ addRecent: true });
+      if (result) scrollToElement('sriOutput');
+    }
+
+    function calculateAndShowVentilator() {
+      const result = calculateVentilator();
+      if (result) scrollToElement('ventOutput');
+    }
+
+    function setPatientCollapsed(collapsed, persist = true) {
+      const panel = $('patientPanel');
+      const button = $('togglePatientBtn');
+      if (!panel || !button) return;
+      panel.classList.toggle('collapsed', collapsed);
+      button.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+      button.textContent = collapsed ? 'Mostrar datos' : 'Ocultar datos';
+      if (persist) safeStorageSet(`${STORAGE_KEY}_patient_collapsed`, collapsed ? '1' : '0');
+      updatePatientCompactSummary();
+    }
+
+    function loadPatientCollapsed() {
+      const collapsed = safeStorageGet(`${STORAGE_KEY}_patient_collapsed`) === '1';
+      setPatientCollapsed(collapsed, false);
+    }
+
+    function resolveWeight(source, manualWeightId) {
+      const patient = calculatePatientShallow();
+      if (source === 'actual') return patient.actual;
+      if (source === 'ibw') return patient.ibw;
+      if (source === 'pbw') return patient.pbw;
+      if (source === 'abw') return patient.abw;
+      if (source === 'manual') return n(manualWeightId);
+      return null;
+    }
+
+    function updateSelectedWeight() {
+      const w = selectedWeightValueNoRender();
+      $('selectedWeightOut').value = w ? `${rounded(w, 1)} kg` : '—';
+    }
+
+    function selectedWeightValueNoRender() {
+      return resolveWeight($('weightSource').value, 'manualWeight');
+    }
+
+    function selectedSriWeightValueNoRender() {
+      return resolveWeight($('sriWeightSource').value, 'sriManualWeight');
+    }
+
+    function updateSriSelectedWeight() {
+      const field = $('sriSelectedWeightOut');
+      if (!field) return;
+      const w = selectedSriWeightValueNoRender();
+      field.value = w ? `${rounded(w, 1)} kg` : '—';
+    }
+
+    function selectedVentWeightValueNoRender() {
+      return resolveWeight($('ventWeightSource').value, 'ventManualWeight');
+    }
+
+    function updateVentSelectedWeight() {
+      const field = $('ventSelectedWeightOut');
+      if (!field) return;
+      const w = selectedVentWeightValueNoRender();
+      field.value = w ? `${rounded(w, 1)} kg` : '—';
+    }
+
+    function selectedVtMlKg() {
+      const selected = $('vtMlKg').value;
+      if (selected === 'manual') return n('vtManualMlKg');
+      const parsed = parseFloat(selected);
+      return Number.isFinite(parsed) ? parsed : null;
+    }
+
+    function updateVentReferenceCards() {
+      if (!$('vt4Out')) return;
+      const w = selectedVentWeightValueNoRender();
+      const refs = { vt4Out: 4, vt6Out: 6, vt7Out: 7, vt8Out: 8 };
+      Object.entries(refs).forEach(([id, factor]) => {
+        $(id).textContent = w ? rounded(w * factor, 0) : '—';
+      });
+    }
+
+    function concentrationText(amount, amountUnit, volume) {
+      if (!amount || !volume) return '—';
+      if (amountUnit === 'mg') {
+        return `${rateFormat(amount / volume)} mg/mL · ${rateFormat((amount * 1000) / volume)} mcg/mL`;
+      }
+      if (amountUnit === 'mcg') {
+        return `${rateFormat(amount / volume)} mcg/mL · ${rateFormat((amount / 1000) / volume)} mg/mL`;
+      }
+      return `${rateFormat(amount / volume)} unidades/mL`;
+    }
+
+    function formatSolutionDuration(totalVolumeMl, rateMlHr) {
+      if (!Number.isFinite(totalVolumeMl) || !Number.isFinite(rateMlHr) || totalVolumeMl <= 0 || rateMlHr <= 0) return '—';
+      let totalMinutes = Math.round((totalVolumeMl / rateMlHr) * 60);
+      if (totalMinutes < 1) return 'menos de 1 minuto';
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      const hText = hours === 1 ? '1 hora' : `${hours} horas`;
+      const mText = minutes === 1 ? '1 minuto' : `${minutes} minutos`;
+      if (hours > 0 && minutes > 0) return `${hText} con ${mText}`;
+      if (hours > 0) return hText;
+      return mText;
+    }
+
+    function calculateInfusion(options = {}) {
+      const addRecent = Boolean(options.addRecent);
+      const drugName = $('drugName').value.trim() || 'Medicamento';
+      const amount = n('drugAmount');
+      const amountUnit = $('drugUnit').value;
+      const volume = n('totalVolume');
+      const dose = n('targetDose');
+      const doseUnit = $('doseUnit').value;
+      const weight = selectedWeightValueNoRender();
+      const warnings = [];
+
+      renderWarnings('warningsOut', []);
+
+      if (!amount || !volume || !dose) {
+        setInfusionEmpty('Completa cantidad, volumen y dosis objetivo.');
+        return null;
+      }
+
+      if (volume <= 0 || amount <= 0 || dose <= 0) {
+        setInfusionEmpty('Los valores deben ser mayores que cero.');
+        return null;
+      }
+
+      const needsWeight = ['mcgkgmin', 'mcgkgphr', 'mgkgmin', 'mgkgphr'].includes(doseUnit);
+      if (needsWeight && (!weight || weight <= 0)) {
+        setInfusionEmpty('La unidad seleccionada requiere un peso válido.');
+        return null;
+      }
+
+      let rate = null;
+      let formula = '';
+      let equiv = '';
+
+      const concMcgMl = amountUnit === 'mg' ? (amount * 1000) / volume : amountUnit === 'mcg' ? amount / volume : null;
+      const concMgMl = amountUnit === 'mg' ? amount / volume : amountUnit === 'mcg' ? (amount / 1000) / volume : null;
+      const concUnitsMl = amountUnit === 'units' ? amount / volume : null;
+
+      if (doseUnit.startsWith('mcg') && amountUnit === 'units') {
+        setInfusionEmpty('La dosis en mcg/mg no corresponde con una concentración en unidades.');
+        return null;
+      }
+      if (doseUnit.startsWith('mg') && amountUnit === 'units') {
+        setInfusionEmpty('La dosis en mg/mcg no corresponde con una concentración en unidades.');
+        return null;
+      }
+      if (doseUnit.startsWith('units') && amountUnit !== 'units') {
+        setInfusionEmpty('La dosis en unidades requiere que la cantidad esté en unidades.');
+        return null;
+      }
+
+      switch (doseUnit) {
+        case 'mcgkgmin': {
+          const mcgPerMin = dose * weight;
+          rate = (mcgPerMin * 60) / concMcgMl;
+          equiv = `${rateFormat(mcgPerMin)} mcg/min · ${rateFormat(mcgPerMin * 60)} mcg/h`;
+          formula = 'mL/h = (mcg/kg/min × kg × 60) / (mcg/mL)';
+          break;
+        }
+        case 'mcgkgphr': {
+          const mcgPerHr = dose * weight;
+          rate = mcgPerHr / concMcgMl;
+          equiv = `${rateFormat(mcgPerHr)} mcg/h`;
+          formula = 'mL/h = (mcg/kg/h × kg) / (mcg/mL)';
+          break;
+        }
+        case 'mcgmin': {
+          rate = (dose * 60) / concMcgMl;
+          equiv = `${rateFormat(dose)} mcg/min · ${rateFormat(dose * 60)} mcg/h`;
+          formula = 'mL/h = (mcg/min × 60) / (mcg/mL)';
+          break;
+        }
+        case 'mcghr': {
+          rate = dose / concMcgMl;
+          equiv = `${rateFormat(dose)} mcg/h`;
+          formula = 'mL/h = mcg/h / (mcg/mL)';
+          break;
+        }
+        case 'mgkgmin': {
+          const mgPerMin = dose * weight;
+          rate = (mgPerMin * 60) / concMgMl;
+          equiv = `${rateFormat(mgPerMin)} mg/min · ${rateFormat(mgPerMin * 60)} mg/h`;
+          formula = 'mL/h = (mg/kg/min × kg × 60) / (mg/mL)';
+          break;
+        }
+        case 'mgkgphr': {
+          const mgPerHr = dose * weight;
+          rate = mgPerHr / concMgMl;
+          equiv = `${rateFormat(mgPerHr)} mg/h`;
+          formula = 'mL/h = (mg/kg/h × kg) / (mg/mL)';
+          break;
+        }
+        case 'mgmin': {
+          rate = (dose * 60) / concMgMl;
+          equiv = `${rateFormat(dose)} mg/min · ${rateFormat(dose * 60)} mg/h`;
+          formula = 'mL/h = (mg/min × 60) / (mg/mL)';
+          break;
+        }
+        case 'mghr': {
+          rate = dose / concMgMl;
+          equiv = `${rateFormat(dose)} mg/h`;
+          formula = 'mL/h = mg/h / (mg/mL)';
+          break;
+        }
+        case 'unitsmin': {
+          rate = (dose * 60) / concUnitsMl;
+          equiv = `${rateFormat(dose)} unidades/min · ${rateFormat(dose * 60)} unidades/h`;
+          formula = 'mL/h = (unidades/min × 60) / (unidades/mL)';
+          break;
+        }
+        case 'unitshr': {
+          rate = dose / concUnitsMl;
+          equiv = `${rateFormat(dose)} unidades/h`;
+          formula = 'mL/h = unidades/h / (unidades/mL)';
+          break;
+        }
+      }
+
+      if (!Number.isFinite(rate)) {
+        setInfusionEmpty('No se pudo calcular. Revisa unidades y concentración.');
+        return null;
+      }
+
+      if (rate > 999) warnings.push('La velocidad calculada es muy alta. Revisa concentración, dosis y unidad antes de usarla.');
+      if (rate < 0.1) warnings.push('La velocidad calculada es menor a 0.1 mL/h. Revisa si la bomba permite esa precisión.');
+      addSharedMedicationSafety(warnings, drugName, 'infusion');
+      if (isPediatricMode() && needsWeight && !['actual', 'manual'].includes($('weightSource').value)) warnings.push('En modo pediátrico evita usar peso ideal/predicho adulto; usa peso real, estimado o manual según protocolo.');
+      const durationMinutes = rate > 0 && volume > 0 ? (volume / rate) * 60 : null;
+      if (durationMinutes && durationMinutes < 30) warnings.push('La solución duraría menos de 30 minutos a esta velocidad. Revisa concentración, volumen y logística de recambio.');
+      if (amountUnit === 'mg' && ['mcgkgmin', 'mcgkgphr', 'mcgmin', 'mcghr'].includes(doseUnit)) warnings.push('Se convirtió mg a mcg automáticamente para el cálculo.');
+      if (amountUnit === 'mcg' && ['mgkgmin', 'mgkgphr', 'mgmin', 'mghr'].includes(doseUnit)) warnings.push('Se convirtió mcg a mg automáticamente para el cálculo.');
+      if (needsWeight && $('weightSource').value !== 'manual') warnings.push(`Peso usado desde módulo paciente: ${rateFormat(weight)} kg.`);
+      if (n('heightCm') && n('heightCm') < 152.4) warnings.push('Talla menor a 152.4 cm: verifica si tu protocolo usa ajuste específico.');
+
+      $('rateOut').textContent = rateFormat(rate);
+      $('resultStatus').innerHTML = `<span class="ok-text">Cálculo listo:</span> ${drugName}. Verifica antes de administrar.`;
+      $('concentrationOut').textContent = concentrationText(amount, amountUnit, volume);
+      const duration = formatSolutionDuration(volume, rate);
+      $('equivDoseOut').textContent = equiv;
+      $('solutionDurationOut').textContent = duration;
+      $('infusionFormulaOut').textContent = formula;
+      renderWarnings('warningsOut', warnings);
+
+      saveState();
+      const result = { drugName, rate, concentration: concentrationText(amount, amountUnit, volume), equiv, duration, formula, warnings };
+      if (addRecent) {
+        addRecentCalculation('infusion', {
+          title: `${drugName} · ${rateFormat(rate)} mL/h`,
+          text: buildInfusionLines(result, false).join('\n')
+        });
+      }
+      return result;
+    }
+
+    function setInfusionEmpty(message) {
+      $('rateOut').textContent = '—';
+      $('resultStatus').innerHTML = `<span class="warn-text">${message}</span>`;
+      $('concentrationOut').textContent = '—';
+      $('equivDoseOut').textContent = '—';
+      $('solutionDurationOut').textContent = '—';
+      $('infusionFormulaOut').textContent = '—';
+      renderWarnings('warningsOut', []);
+    }
+
+
+    function sriDoseText(totalMg, totalMcg) {
+      if (!Number.isFinite(totalMg) || !Number.isFinite(totalMcg)) return '—';
+      if (totalMg >= 1) return `${rateFormat(totalMg)} mg (${rateFormat(totalMcg)} mcg)`;
+      return `${rateFormat(totalMcg)} mcg (${rateFormat(totalMg)} mg)`;
+    }
+
+    function calculateSRI(options = {}) {
+      const addRecent = Boolean(options.addRecent);
+      const drugName = $('sriDrugName').value.trim() || 'Fármaco SRI';
+      const dose = n('sriDose');
+      const doseUnit = $('sriDoseUnit').value;
+      const concentration = n('sriConcentration');
+      const concentrationUnit = $('sriConcentrationUnit').value;
+      const weight = selectedSriWeightValueNoRender();
+      const warnings = [];
+
+      renderWarnings('sriWarningsOut', []);
+
+      if (!dose || !concentration) {
+        setSriEmpty('Completa dosis objetivo y concentración.');
+        return null;
+      }
+      if (dose <= 0 || concentration <= 0) {
+        setSriEmpty('Los valores deben ser mayores que cero.');
+        return null;
+      }
+
+      const needsWeight = ['mgkg', 'mcgkg'].includes(doseUnit);
+      if (needsWeight && (!weight || weight <= 0)) {
+        setSriEmpty('La unidad seleccionada requiere un peso válido.');
+        return null;
+      }
+
+      let totalMg = null;
+      let totalMcg = null;
+      let formula = '';
+
+      switch (doseUnit) {
+        case 'mgkg':
+          totalMg = dose * weight;
+          totalMcg = totalMg * 1000;
+          formula = 'Dosis total = mg/kg × kg; volumen = mg totales / (mg/mL)';
+          break;
+        case 'mcgkg':
+          totalMcg = dose * weight;
+          totalMg = totalMcg / 1000;
+          formula = 'Dosis total = mcg/kg × kg; volumen = mcg totales / (mcg/mL)';
+          break;
+        case 'mg':
+          totalMg = dose;
+          totalMcg = totalMg * 1000;
+          formula = 'Volumen = mg totales / concentración';
+          break;
+        case 'mcg':
+          totalMcg = dose;
+          totalMg = totalMcg / 1000;
+          formula = 'Volumen = mcg totales / concentración';
+          break;
+      }
+
+      let volume = null;
+      if (concentrationUnit === 'mgml') {
+        volume = totalMg / concentration;
+        if (doseUnit.includes('mcg')) warnings.push('Se convirtió la dosis de mcg a mg para usar concentración en mg/mL.');
+      } else {
+        volume = totalMcg / concentration;
+        if (doseUnit.includes('mg')) warnings.push('Se convirtió la dosis de mg a mcg para usar concentración en mcg/mL.');
+      }
+
+      if (!Number.isFinite(volume)) {
+        setSriEmpty('No se pudo calcular. Revisa unidades y concentración.');
+        return null;
+      }
+
+      addSharedMedicationSafety(warnings, drugName, 'sri');
+      if (needsWeight) warnings.push(`Peso usado: ${rateFormat(weight)} kg.`);
+      if (isPediatricMode() && needsWeight && !['actual', 'manual'].includes($('sriWeightSource').value)) warnings.push('En modo pediátrico evita usar peso ideal/predicho adulto; usa peso real, estimado o manual según protocolo.');
+      if (!needsWeight && selectedSriWeightValueNoRender()) warnings.push('La dosis seleccionada es total, no por kg. Confirma que no pretendías usar mg/kg o mcg/kg.');
+      if (volume > 50) warnings.push('El volumen calculado es alto para bolo. Revisa concentración, dosis y unidad antes de cargar.');
+      if (volume < 0.1) warnings.push('El volumen calculado es menor a 0.1 mL. Revisa si puedes medirlo con seguridad.');
+      if (drugName.toLowerCase().includes('atropina')) warnings.push('Atropina: este preset no aplica dosis mínima ni máxima automática. Verifica indicación, rango de dosis, tope y concentración según protocolo local.');
+      if (['rocuronio', 'rocuronium', 'succinilcolina', 'succinylcholine', 'vecuronio', 'vecuronium'].some(x => drugName.toLowerCase().includes(x))) warnings.push('Reconfirma ventilación, oxigenación, capnografía y plan post-intubación antes de administrar bloqueador neuromuscular.');
+
+      $('sriVolumeOut').textContent = rateFormat(volume);
+      $('sriStatus').innerHTML = `<span class="ok-text">Cálculo listo:</span> ${drugName}. Verifica antes de administrar.`;
+      $('sriTotalDoseOut').textContent = sriDoseText(totalMg, totalMcg);
+      $('sriConcentrationOut').textContent = `${rateFormat(concentration)} ${concentrationUnit === 'mgml' ? 'mg/mL' : 'mcg/mL'}`;
+      $('sriFormulaOut').textContent = formula;
+      renderWarnings('sriWarningsOut', warnings);
+
+      saveState();
+      const result = { drugName, volume, totalMg, totalMcg, concentration, concentrationUnit, formula, warnings };
+      if (addRecent) {
+        addRecentCalculation('sri', {
+          title: `${drugName} · ${rateFormat(volume)} mL`,
+          text: buildSriLines(result, false).join('\n')
+        });
+      }
+      return result;
+    }
+
+    function setSriEmpty(message) {
+      $('sriVolumeOut').textContent = '—';
+      $('sriStatus').innerHTML = `<span class="warn-text">${message}</span>`;
+      $('sriTotalDoseOut').textContent = '—';
+      $('sriConcentrationOut').textContent = '—';
+      $('sriFormulaOut').textContent = '—';
+      renderWarnings('sriWarningsOut', []);
+    }
+
+    function calculateVentilator() {
+      const weight = selectedVentWeightValueNoRender();
+      const mlKg = selectedVtMlKg();
+      const rr = n('respRate');
+      const fio2 = n('fio2');
+      const peep = n('peep');
+      const profile = $('ventProfile').value;
+      const mode = $('ventMode').value;
+      const warnings = [];
+
+      renderWarnings('ventWarningsOut', []);
+      updateVentSelectedWeight();
+      updateVentReferenceCards();
+
+      if (!weight || weight <= 0) {
+        setVentEmpty(isPediatricMode() ? 'Ingresa peso real/manual válido para modo pediátrico.' : 'Ingresa talla/sexo para peso predicho o selecciona un peso válido.');
+        return null;
+      }
+      if (!mlKg || mlKg <= 0) {
+        setVentEmpty('Selecciona un VT en mL/kg o escribe uno manual válido.');
+        return null;
+      }
+
+      const vt = weight * mlKg;
+      const vt4 = weight * 4;
+      const vt6 = weight * 6;
+      const vt7 = weight * 7;
+      const vt8 = weight * 8;
+      const minuteVent = rr && rr > 0 ? (vt / 1000) * rr : null;
+      const settings = [
+        `Modo: ${mode}`,
+        rr ? `FR ${rr}/min` : null,
+        fio2 ? `FiO₂ ${fio2}%` : null,
+        peep !== null ? `PEEP ${peep} cmH₂O` : null,
+        $('ieRatio').value.trim() ? `I:E ${$('ieRatio').value.trim()}` : null
+      ].filter(Boolean).join(' · ');
+
+      if (isPediatricMode()) {
+        warnings.push('Modo pediátrico: usa peso real/estimado o manual; las fórmulas adultas de peso ideal/predicho no se usan aquí.');
+      } else if ($('ventWeightSource').value !== 'pbw') {
+        warnings.push('Para ventilación protectora en adultos suele preferirse peso predicho basado en talla y sexo, no peso real.');
+      }
+      if (fio2 && fio2 > 60) warnings.push('FiO₂ mayor a 60%: revalorar oxigenación, PEEP y plan de reducción cuando sea clínicamente posible.');
+      if (peep !== null && peep > 10) warnings.push('PEEP mayor a 10 cmH₂O: vigilar presión arterial, presión de vía aérea y respuesta clínica.');
+      if (mlKg > 8) warnings.push('VT mayor a 8 mL/kg: revisar indicación, riesgo de sobredistensión y protocolo.');
+      if (mlKg < 4) warnings.push('VT menor a 4 mL/kg: requiere vigilancia estrecha y ajuste clínico especializado.');
+      if (rr && rr > 35) warnings.push('FR mayor a 35/min: revisar ventilación minuto, auto-PEEP y estrategia ventilatoria.');
+      if (profile.includes('EPOC') || profile.includes('asma')) warnings.push('Obstructivo: vigilar auto-PEEP, atrapamiento aéreo, tiempo espiratorio e hipotensión por presión intratorácica.');
+      if (profile.includes('SDRA')) warnings.push('SDRA: vigilar presión plateau, driving pressure, oxigenación y respuesta a PEEP según protocolo.');
+      warnings.push('Revalorar con SatO₂, EtCO₂, auscultación, expansión torácica, presión de vía aérea y gasometría cuando esté disponible.');
+
+      $('ventVtOut').textContent = rounded(vt, 0);
+      $('ventStatus').innerHTML = `<span class="ok-text">Cálculo listo:</span> ${profile}. Verifica antes de programar ventilador.`;
+      $('minuteVentOut').textContent = minuteVent ? `${rateFormat(minuteVent)} L/min` : 'Ingresa FR para estimar';
+      $('vtRangeOut').textContent = `${rounded(vt6, 0)}–${rounded(vt8, 0)} mL`;
+      $('ventSettingsOut').textContent = settings || '—';
+      $('ventFormulaOut').textContent = `VT = ${rateFormat(weight)} kg × ${rateFormat(mlKg)} mL/kg`;
+      renderWarnings('ventWarningsOut', warnings);
+
+      saveState();
+      return { weight, mlKg, vt, vt4, vt6, vt7, vt8, minuteVent, settings, profile, mode, warnings };
+    }
+
+    function setVentEmpty(message) {
+      if (!$('ventVtOut')) return;
+      $('ventVtOut').textContent = '—';
+      $('ventStatus').innerHTML = `<span class="warn-text">${message}</span>`;
+      $('minuteVentOut').textContent = '—';
+      $('vtRangeOut').textContent = '—';
+      $('ventSettingsOut').textContent = '—';
+      $('ventFormulaOut').textContent = '—';
+      renderWarnings('ventWarningsOut', []);
+    }
+
+
+    function safeStorageGet(key) {
+      try { return localStorage.getItem(key); } catch (e) { return null; }
+    }
+
+    function safeStorageSet(key, value) {
+      try { localStorage.setItem(key, value); } catch (e) { console.warn('No se pudo guardar estado local.', e); }
+    }
+
+    function safeStorageRemove(key) {
+      try { localStorage.removeItem(key); } catch (e) { console.warn('No se pudo limpiar estado local.', e); }
+    }
+
+    function scaleValue(id) {
+      const el = $(id);
+      if (!el || el.value === '') return null;
+      const value = parseFloat(el.value);
+      return Number.isFinite(value) ? value : null;
+    }
+
+    function setScaleResult(id, title, detail, level = '') {
+      const el = $(id);
+      if (!el) return;
+      el.classList.remove('ok', 'warn', 'danger');
+      if (level) el.classList.add(level);
+      el.innerHTML = `<strong>${escapeHtml(title)}</strong>${escapeHtml(detail)}`;
+    }
+
+    function calculateScales() {
+      calculateGcsScale();
+      calculateQsofaScale();
+      calculateShockIndexScale();
+      calculateNihssScale();
+      calculateApgarScale();
+      calculateBurnScale();
+    }
+
+    function calculateGcsScale() {
+      if (!$('gcsResult')) return;
+      const eye = scaleValue('gcsEye');
+      const verbal = scaleValue('gcsVerbal');
+      const motor = scaleValue('gcsMotor');
+      if (eye === null || verbal === null || motor === null) {
+        setScaleResult('gcsResult', '—', 'Selecciona E, V y M.');
+        return;
+      }
+      const total = eye + verbal + motor;
+      let level = 'ok';
+      let text = 'Leve o sin alteración grave por puntaje. Revalorar tendencia.';
+      if (total <= 8) {
+        level = 'danger';
+        text = 'Grave. Considera protección de vía aérea y manejo según protocolo.';
+      } else if (total <= 12) {
+        level = 'warn';
+        text = 'Moderado. Vigilar deterioro neurológico y reevaluar.';
+      }
+      setScaleResult('gcsResult', `GCS ${total} / 15`, `E${eye} V${verbal} M${motor}. ${text}`, level);
+    }
+
+    function calculateQsofaScale() {
+      if (!$('qsofaResult')) return;
+      const rr = scaleValue('qsofaRr');
+      const sbp = scaleValue('qsofaSbp');
+      const mentationRaw = $('qsofaMentation') ? $('qsofaMentation').value : '';
+      if (rr === null || sbp === null || mentationRaw === '') {
+        setScaleResult('qsofaResult', '—', 'Ingresa FR, PAS y mentación.');
+        return;
+      }
+      const mentation = parseInt(mentationRaw, 10);
+      const points = [rr >= 22, sbp <= 100, mentation === 1].filter(Boolean).length;
+      const details = [
+        rr >= 22 ? 'FR ≥22' : 'FR <22',
+        sbp <= 100 ? 'PAS ≤100' : 'PAS >100',
+        mentation === 1 ? 'mentación alterada' : 'mentación normal'
+      ].join(' · ');
+      const level = points >= 2 ? 'danger' : points === 1 ? 'warn' : 'ok';
+      const interpretation = points >= 2
+        ? 'Riesgo aumentado en sospecha de infección/sepsis; escalar valoración.'
+        : points === 1
+          ? 'Un criterio positivo; vigilar evolución y contexto clínico.'
+          : 'Sin criterios qSOFA positivos en esta pantalla.';
+      setScaleResult('qsofaResult', `qSOFA ${points} / 3`, `${details}. ${interpretation}`, level);
+    }
+
+    function calculateShockIndexScale() {
+      if (!$('shockResult')) return;
+      const hr = scaleValue('shockHr');
+      const sbp = scaleValue('shockSbp');
+      if (hr === null || sbp === null || sbp <= 0) {
+        setScaleResult('shockResult', '—', 'Ingresa FC y PAS.');
+        return;
+      }
+      const index = hr / sbp;
+      const pediatricNote = $('patientType') && $('patientType').value === 'pediatric' ? ' En pediatría interpreta con rangos por edad.' : '';
+      let level = 'ok';
+      let text = 'Rango bajo/esperado en adulto, si el contexto coincide.';
+      if (index >= 0.9) {
+        level = 'danger';
+        text = 'Elevado; puede sugerir hipovolemia, choque o compensación. Revalorar perfusión.';
+      } else if (index >= 0.7) {
+        level = 'warn';
+        text = 'Intermedio; vigilar tendencia y contexto clínico.';
+      }
+      setScaleResult('shockResult', `Índice ${rateFormat(index)}`, `FC ${hr}/PAS ${sbp}. ${text}${pediatricNote}`, level);
+    }
+
+    function calculateNihssScale() {
+      if (!$('nihssResult')) return;
+      const ids = [
+        'nihssLoc', 'nihssQuestions', 'nihssCommands', 'nihssGaze', 'nihssVisual', 'nihssFacial',
+        'nihssArmLeft', 'nihssArmRight', 'nihssLegLeft', 'nihssLegRight', 'nihssAtaxia', 'nihssSensory',
+        'nihssLanguage', 'nihssDysarthria', 'nihssNeglect'
+      ];
+      const values = ids.map(id => scaleValue(id));
+      if (values.some(v => v === null)) {
+        setScaleResult('nihssResult', '—', 'Completa los apartados NIHSS. Si un rubro no es valorable, registra la excepción según protocolo.');
+        return;
+      }
+      const total = values.reduce((a, b) => a + b, 0);
+      let level = 'ok';
+      let severity = 'Sin déficit medible por puntaje.';
+      if (total >= 21) {
+        level = 'danger';
+        severity = 'Déficit severo. Activar protocolo EVC/ACV y traslado/alerta hospitalaria según sistema local.';
+      } else if (total >= 16) {
+        level = 'danger';
+        severity = 'Déficit moderado-severo. Activar protocolo EVC/ACV y documentar hora de inicio o última vez visto normal.';
+      } else if (total >= 5) {
+        level = 'warn';
+        severity = 'Déficit moderado. No retrasar activación de protocolo si el cuadro es compatible con EVC.';
+      } else if (total >= 1) {
+        level = 'warn';
+        severity = 'Déficit leve. Puede seguir siendo EVC; registra hora de inicio, glucosa y signos neurológicos.';
+      }
+      const fastNotes = [];
+      if (scaleValue('nihssArmLeft') > 0 || scaleValue('nihssArmRight') > 0 || scaleValue('nihssLegLeft') > 0 || scaleValue('nihssLegRight') > 0) fastNotes.push('déficit motor');
+      if (scaleValue('nihssLanguage') > 0 || scaleValue('nihssDysarthria') > 0) fastNotes.push('lenguaje/habla');
+      if (scaleValue('nihssGaze') > 0 || scaleValue('nihssVisual') > 0 || scaleValue('nihssNeglect') > 0) fastNotes.push('cortical/visual');
+      const details = fastNotes.length ? `${severity} Hallazgos principales: ${fastNotes.join(', ')}.` : severity;
+      setScaleResult('nihssResult', `NIHSS ${total} / 42`, details, level);
+    }
+
+    function calculateApgarScale() {
+      if (!$('apgarResult')) return;
+      const ids = ['apgarAppearance', 'apgarPulse', 'apgarGrimace', 'apgarActivity', 'apgarRespiration'];
+      const values = ids.map(id => scaleValue(id));
+      if (values.some(v => v === null)) {
+        setScaleResult('apgarResult', '—', 'Selecciona los 5 componentes.');
+        return;
+      }
+      const total = values.reduce((a, b) => a + b, 0);
+      let level = 'ok';
+      let text = 'Condición generalmente adecuada por puntaje; continuar vigilancia.';
+      if (total <= 3) {
+        level = 'danger';
+        text = 'Bajo. Priorizar reanimación neonatal según protocolo; no esperar APGAR para iniciar acciones.';
+      } else if (total <= 6) {
+        level = 'warn';
+        text = 'Intermedio. Requiere vigilancia y soporte según respiración, FC y tono.';
+      }
+      setScaleResult('apgarResult', `APGAR ${total} / 10`, text, level);
+    }
+
+    function calculateBurnScale() {
+      if (!$('burnResult')) return;
+      const weight = scaleValue('burnWeight');
+      const tbsa = scaleValue('burnTbsa');
+      const hours = scaleValue('burnHoursSince');
+      const given = scaleValue('burnGivenMl') || 0;
+      if (weight === null || tbsa === null || weight <= 0 || tbsa <= 0) {
+        setScaleResult('burnResult', '—', 'Ingresa peso y %SCQ.');
+        return;
+      }
+      if (tbsa > 100) {
+        setScaleResult('burnResult', 'Revisar %SCQ', 'El porcentaje no debe ser mayor a 100%.', 'danger');
+        return;
+      }
+      const parklandTotal = 4 * weight * tbsa;
+      const parklandFirst8 = parklandTotal / 2;
+      const parklandSecond16 = parklandTotal / 2;
+      const brookeTotal = 2 * weight * tbsa;
+      const brookeFirst8 = brookeTotal / 2;
+      const brookeSecond16 = brookeTotal / 2;
+      const pediatricNote = $('patientType') && $('patientType').value === 'pediatric'
+        ? ' Pediátrico: confirmar mantenimiento, glucosa y fórmula local.'
+        : '';
+      let detail = `Parkland: ${rounded(parklandTotal, 0)} mL/24 h (${rounded(parklandFirst8, 0)} mL primeras 8 h, ${rounded(parklandSecond16, 0)} mL siguientes 16 h). Brooke modificado: ${rounded(brookeTotal, 0)} mL/24 h (${rounded(brookeFirst8, 0)} mL primeras 8 h, ${rounded(brookeSecond16, 0)} mL siguientes 16 h).`;
+      if (hours !== null && hours >= 0) {
+        const burnRateText = (label, total, first8) => {
+          if (hours < 8) {
+            const remaining = Math.max(first8 - given, 0);
+            const rate = remaining / Math.max(8 - hours, 0.25);
+            return `${label}: faltan aprox. ${rounded(remaining, 0)} mL para la meta de 8 h; ${rounded(rate, 0)} mL/h.`;
+          }
+          if (hours < 24) {
+            const remaining = Math.max(total - given, 0);
+            const rate = remaining / Math.max(24 - hours, 0.25);
+            return `${label}: faltante aprox. ${rounded(remaining, 0)} mL hasta 24 h; ${rounded(rate, 0)} mL/h.`;
+          }
+          return `${label}: pasaron 24 h o más; guiar por perfusión, diuresis, laboratorio y protocolo.`;
+        };
+        detail += ` Ritmo estimado con cristaloide ya dado: ${burnRateText('Parkland', parklandTotal, parklandFirst8)} ${burnRateText('Brooke', brookeTotal, brookeFirst8)}`;
+      }
+      const level = tbsa >= 20 ? 'danger' : tbsa >= 10 ? 'warn' : 'ok';
+      setScaleResult('burnResult', `${rounded(tbsa, 1)}% SCQ`, `${detail}${pediatricNote}`, level);
+    }
+
+    function addTbsaPercent(percent) {
+      const field = $('burnTbsa');
+      if (!field) return;
+      const current = scaleValue('burnTbsa') || 0;
+      const next = Math.min(100, current + percent);
+      field.value = rateFormat(next);
+      saveState();
+      calculateScales();
+      showToast(`%SCQ: ${rateFormat(next)}%`);
+    }
+
+    function usePatientWeightForBurn() {
+      const patient = calculatePatientShallow();
+      if (!patient.actual || patient.actual <= 0) {
+        showToast('Ingresa peso real del paciente');
+        return;
+      }
+      $('burnWeight').value = rateFormat(patient.actual);
+      saveState();
+      calculateScales();
+      showToast('Peso copiado a quemaduras');
+    }
+
+    function clearScales() {
+      scaleInputs.forEach(id => { if ($(id)) $(id).value = ''; });
+      saveState();
+      calculateScales();
+      showToast('Escalas limpiadas');
+    }
+
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function recentTimestamp() {
+      const d = new Date();
+      return d.toLocaleString('es-MX', {
+        day: '2-digit',
+        month: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    function getRecentState() {
+      try {
+        const raw = safeStorageGet(RECENT_KEY);
+        if (!raw) return { infusion: [], sri: [] };
+        const parsed = JSON.parse(raw);
+        return {
+          infusion: Array.isArray(parsed.infusion) ? parsed.infusion : [],
+          sri: Array.isArray(parsed.sri) ? parsed.sri : []
+        };
+      } catch (e) {
+        console.warn('No se pudo cargar el historial de cálculos.', e);
+        return { infusion: [], sri: [] };
+      }
+    }
+
+    function saveRecentState(state) {
+      safeStorageSet(RECENT_KEY, JSON.stringify({
+        infusion: (state.infusion || []).slice(0, RECENT_LIMIT),
+        sri: (state.sri || []).slice(0, RECENT_LIMIT)
+      }));
+    }
+
+    function renderRecentList(module, targetId) {
+      const target = $(targetId);
+      if (!target) return;
+      const state = getRecentState();
+      const items = state[module] || [];
+      if (!items.length) {
+        target.innerHTML = '<div class="mini">Aún no hay cálculos recientes.</div>';
+        return;
+      }
+      target.innerHTML = items.map(item => `
+        <div class="recent-card">
+          <div class="recent-card-head">
+            <strong>${escapeHtml(item.title || 'Cálculo')}</strong>
+            <span class="recent-time">${escapeHtml(item.time || '')}</span>
+          </div>
+          <pre class="recent-text">${escapeHtml(item.text || '')}</pre>
+        </div>
+      `).join('');
+    }
+
+    function renderRecentCalculations() {
+      renderRecentList('infusion', 'infusionRecentList');
+      renderRecentList('sri', 'sriRecentList');
+    }
+
+    function addRecentCalculation(module, item) {
+      const state = getRecentState();
+      const current = state[module] || [];
+      state[module] = [{ ...item, time: recentTimestamp() }, ...current].slice(0, RECENT_LIMIT);
+      saveRecentState(state);
+      renderRecentCalculations();
+    }
+
+    function clearRecentCalculations(module) {
+      const state = getRecentState();
+      state[module] = [];
+      saveRecentState(state);
+      renderRecentCalculations();
+      showToast('Recientes borrados');
+    }
+
+    function buildInfusionLines(r, includeSafety = false) {
+      const lines = [
+        `Medicamento: ${r.drugName}`,
+        `Velocidad: ${rateFormat(r.rate)} mL/h`,
+        `Concentración: ${r.concentration}`,
+        `Dosis equivalente: ${r.equiv}`,
+        `Duración estimada de solución: ${r.duration}`,
+        `Fórmula: ${r.formula}`,
+        `Peso usado: ${$('selectedWeightOut').value || '—'}`
+      ];
+      const notesText = $('notes').value.trim();
+      if (notesText) lines.push(`Notas: ${notesText}`);
+      if (includeSafety) lines.push('Verificar medicamento, dosis, concentración, protocolo local y condición clínica antes de administrar.');
+      return lines;
+    }
+
+    function buildSriLines(r, includeSafety = false) {
+      const lines = [
+        `Fármaco: ${r.drugName}`,
+        `Tipo/uso: ${$('sriCategory').value}`,
+        `Volumen a cargar: ${rateFormat(r.volume)} mL`,
+        `Dosis total: ${sriDoseText(r.totalMg, r.totalMcg)}`,
+        `Concentración: ${rateFormat(r.concentration)} ${r.concentrationUnit === 'mgml' ? 'mg/mL' : 'mcg/mL'}`,
+        `Fórmula: ${r.formula}`,
+        `Peso usado: ${$('sriSelectedWeightOut').value || '—'}`
+      ];
+      const notesText = $('sriNotes').value.trim();
+      if (notesText) lines.push(`Notas: ${notesText}`);
+      if (includeSafety) lines.push('Verificar fármaco, dosis, concentración, protocolo local, vía, contraindicaciones y condición clínica antes de administrar.');
+      return lines;
+    }
+
+    function saveState() {
+      const state = {};
+      allInputs.forEach(id => { if ($(id)) state[id] = $(id).value; });
+      safeStorageSet(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function loadState() {
+      try {
+        const raw = safeStorageGet(STORAGE_KEY);
+        if (!raw) return;
+        const state = JSON.parse(raw);
+        allInputs.forEach(id => {
+          if ($(id) && state[id] !== undefined) $(id).value = state[id];
+        });
+      } catch (e) {
+        console.warn('No se pudo cargar el estado local.', e);
+      }
+    }
+
+    function clearAll() {
+      allInputs.forEach(id => { if ($(id)) $(id).value = ''; });
+      $('patientType').value = 'adult';
+      $('sex').value = 'male';
+      $('weightSource').value = 'actual';
+      $('sriPresetCategory').value = 'premedication';
+      $('sriCategory').value = 'Premedicación / anticolinérgico';
+      $('sriWeightSource').value = 'actual';
+      $('ventProfile').value = 'Ventilación protectora';
+      $('ventMode').value = 'VCV / A-C';
+      $('ventWeightSource').value = 'pbw';
+      $('vtMlKg').value = '6';
+      safeStorageRemove(STORAGE_KEY);
+      calculatePatient();
+      calculateScales();
+      setInfusionEmpty('Campos limpios.');
+      setSriEmpty('Campos limpios.');
+      setVentEmpty('Campos limpios.');
+      updateSriPresetFilter();
+      showToast('Campos limpiados');
+    }
+
+    function clearInfusion() {
+      infusionInputs.forEach(id => $(id).value = '');
+      $('weightSource').value = 'actual';
+      saveState();
+      calculatePatient();
+      setInfusionEmpty('Infusión limpia.');
+      showToast('Infusión limpiada');
+    }
+
+
+    function clearSRI() {
+      sriInputs.forEach(id => $(id).value = '');
+      $('sriPresetCategory').value = 'premedication';
+      $('sriCategory').value = 'Premedicación / anticolinérgico';
+      $('sriWeightSource').value = 'actual';
+      saveState();
+      calculatePatient();
+      setSriEmpty('SRI limpio.');
+      updateSriPresetFilter();
+      showToast('SRI limpiado');
+    }
+
+
+    function clearVentilator() {
+      ventInputs.forEach(id => $(id).value = '');
+      $('ventProfile').value = 'Ventilación protectora';
+      $('ventMode').value = 'VCV / A-C';
+      $('ventWeightSource').value = 'pbw';
+      $('vtMlKg').value = '6';
+      saveState();
+      calculatePatient();
+      setVentEmpty('Ventilador limpio.');
+      showToast('Ventilador limpiado');
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('Copiado');
+      } catch (e) {
+        const area = document.createElement('textarea');
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand('copy');
+        area.remove();
+        showToast('Copiado');
+      }
+    }
+
+    function copyPatient() {
+      const p = calculatePatientShallow();
+      const lines = [
+        'Resumen de paciente - Calculadora TUM',
+        `Tipo de paciente: ${isPediatricMode() ? 'Pediátrico' : 'Adulto'}`,
+        `Sexo fórmula: ${$('sex').value === 'male' ? 'Masculino' : 'Femenino'}`,
+        `Talla: ${$('heightCm').value || '—'} cm`,
+        `Peso real: ${$('actualWeight').value || '—'} kg`,
+        `Peso ideal: ${p.ibw ? rounded(p.ibw, 1) : '—'} kg`,
+        `Peso predicho: ${p.pbw ? rounded(p.pbw, 1) : '—'} kg`,
+        `Peso ajustado: ${p.abw ? rounded(p.abw, 1) : '—'} kg`,
+        `IMC: ${p.bmi ? rounded(p.bmi, 1) : '—'} kg/m²`,
+        'Verificar cálculos y criterio clínico antes de usar.'
+      ];
+      copyText(lines.join('\n'));
+    }
+
+    function copyInfusion() {
+      const r = calculateInfusion();
+      if (!r) return;
+      copyText(buildInfusionLines(r, true).join('\n'));
+    }
+
+
+    function copySRI() {
+      const r = calculateSRI();
+      if (!r) return;
+      copyText(buildSriLines(r, true).join('\n'));
+    }
+
+    function copyVentilator() {
+      const r = calculateVentilator();
+      if (!r) return;
+      const lines = [
+        'Resultado ventilador - Calculadora TUM',
+        `Perfil: ${r.profile}`,
+        `Modo: ${r.mode}`,
+        `Peso usado para VT: ${$('ventSelectedWeightOut').value || '—'}`,
+        `VT objetivo: ${rounded(r.vt, 0)} mL (${rateFormat(r.mlKg)} mL/kg)`,
+        `Rango 6–8 mL/kg: ${rounded(r.vt6, 0)}–${rounded(r.vt8, 0)} mL`,
+        `Referencias: 4 mL/kg ${rounded(r.vt4, 0)} mL · 6 mL/kg ${rounded(r.vt6, 0)} mL · 7 mL/kg ${rounded(r.vt7, 0)} mL · 8 mL/kg ${rounded(r.vt8, 0)} mL`,
+        `Volumen minuto estimado: ${r.minuteVent ? rateFormat(r.minuteVent) + ' L/min' : '—'}`,
+        `Parámetros escritos: ${r.settings || '—'}`,
+        `Límite/meta presión: ${$('pressureLimit').value.trim() || '—'}`,
+        `Meta SpO₂/oxigenación: ${$('spo2Goal').value.trim() || '—'}`,
+        `Fórmula: VT = peso × mL/kg; VM = VT(L) × FR`
+      ];
+      const notesText = $('ventNotes').value.trim();
+      if (notesText) lines.push(`Notas: ${notesText}`);
+      lines.push('Verificar ventilador, vía aérea, oxigenación, EtCO₂, presión de vía aérea, gasometría, protocolo local y condición clínica antes de usar.');
+      copyText(lines.join('\n'));
+    }
+
+    function showToast(text) {
+      const toast = $('toast');
+      toast.textContent = text;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1600);
+    }
+
+    function applyPreset(key) {
+      const preset = presets[key];
+      if (!preset) return;
+      Object.entries(preset).forEach(([id, value]) => {
+        if (id === 'notes') return;
+        $(id).value = value;
+      });
+      saveState();
+      calculatePatient();
+      calculateInfusion({ addRecent: true });
+      showToast('Preset cargado');
+    }
+
+
+    const sriPresetCategoryInfo = {
+      premedication: 'Premedicación o pretratamiento cuando tu protocolo lo indique. Incluye Atropina, Fentanilo y Lidocaína.',
+      induction: 'Inductores/sedantes para el bolo de inducción. Presets editables; ajustar a protocolo y condición clínica.',
+      paralytic: 'Bloqueadores neuromusculares. Confirmar sedación/analgesia, vía aérea y plan posterior.',
+      postintubation: 'Opciones frecuentes para analgesia/sedación posterior. Ajustar dosis, vía y objetivo clínico según protocolo.',
+      all: 'Muestra todos los presets SRI disponibles.'
+    };
+
+    function updateSriPresetFilter() {
+      const select = $('sriPresetCategory');
+      if (!select) return;
+      let category = select.value || 'premedication';
+      if (!sriPresetCategoryInfo[category]) category = 'premedication';
+      select.value = category;
+      let visibleCount = 0;
+      document.querySelectorAll('[data-sri-preset]').forEach(btn => {
+        const groups = (btn.dataset.sriGroups || '').split(/\s+/).filter(Boolean);
+        const show = category === 'all' || groups.includes(category);
+        btn.classList.toggle('hidden', !show);
+        if (show) visibleCount += 1;
+      });
+      const hint = $('sriPresetCategoryHint');
+      if (hint) hint.textContent = sriPresetCategoryInfo[category] || 'Elige un preset editable según el momento de uso.';
+      const empty = $('sriPresetEmpty');
+      if (empty) empty.style.display = visibleCount ? 'none' : 'block';
+    }
+
+    function applySriPreset(key) {
+      const preset = sriPresets[key];
+      if (!preset) return;
+      const chosenWeightSource = $('sriWeightSource').value || 'actual';
+      const chosenManualWeight = $('sriManualWeight').value;
+      Object.entries(preset).forEach(([id, value]) => {
+        if (id === 'sriNotes' || id === 'sriWeightSource' || id === 'sriManualWeight') return;
+        $(id).value = value;
+      });
+      $('sriWeightSource').value = chosenWeightSource;
+      $('sriManualWeight').value = chosenManualWeight;
+      saveState();
+      calculatePatient();
+      calculateSRI({ addRecent: true });
+      showToast('Preset SRI cargado');
+    }
+
+    function applyVentPreset(key) {
+      const preset = ventPresets[key];
+      if (!preset) return;
+      Object.entries(preset).forEach(([id, value]) => {
+        if (id === 'ventNotes') return;
+        $(id).value = value;
+      });
+      saveState();
+      calculatePatient();
+      calculateVentilator();
+      showToast('Perfil ventilador cargado');
+    }
+
+    function setupTabs() {
+      const tabTargets = {
+        infusions: 'infusionsTab',
+        sri: 'sriTab',
+        ventilator: 'ventilatorTab',
+        scales: 'scalesTab',
+        formulas: 'formulasTab'
+      };
+      document.querySelectorAll('.tab').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          document.querySelectorAll('.tab-content').forEach(section => section.classList.add('hidden'));
+          const target = tabTargets[btn.dataset.tab];
+          if (target) $(target).classList.remove('hidden');
+        });
+      });
+    }
+
+    function setupListeners() {
+      allInputs.forEach(id => {
+        const field = $(id);
+        if (!field) return;
+        field.addEventListener('input', () => {
+          calculatePatient();
+          calculateScales();
+          saveState();
+        });
+        field.addEventListener('change', () => {
+          calculatePatient();
+          calculateScales();
+          saveState();
+        });
+      });
+
+      document.querySelectorAll('[data-preset]').forEach(btn => {
+        btn.addEventListener('click', () => applyPreset(btn.dataset.preset));
+      });
+
+      document.querySelectorAll('[data-sri-preset]').forEach(btn => {
+        btn.addEventListener('click', () => applySriPreset(btn.dataset.sriPreset));
+      });
+
+      if ($('sriPresetCategory')) {
+        $('sriPresetCategory').addEventListener('change', updateSriPresetFilter);
+      }
+
+      document.querySelectorAll('[data-vent-preset]').forEach(btn => {
+        btn.addEventListener('click', () => applyVentPreset(btn.dataset.ventPreset));
+      });
+
+      document.querySelectorAll('[data-jump-target]').forEach(btn => {
+        btn.addEventListener('click', () => scrollToElement(btn.dataset.jumpTarget));
+      });
+
+      document.querySelectorAll('[data-burn-add]').forEach(btn => {
+        btn.addEventListener('click', () => addTbsaPercent(parseFloat(btn.dataset.burnAdd) || 0));
+      });
+
+      if ($('usePatientWeightBurnBtn')) $('usePatientWeightBurnBtn').addEventListener('click', usePatientWeightForBurn);
+      if ($('resetTbsaBtn')) $('resetTbsaBtn').addEventListener('click', () => { $('burnTbsa').value = ''; saveState(); calculateScales(); showToast('%SCQ reiniciado'); });
+      if ($('clearScalesBtn')) $('clearScalesBtn').addEventListener('click', clearScales);
+
+      $('togglePatientBtn').addEventListener('click', () => setPatientCollapsed(!$('patientPanel').classList.contains('collapsed')));
+      $('calcInfusionBtn').addEventListener('click', calculateAndShowInfusion);
+      $('calcSriBtn').addEventListener('click', calculateAndShowSRI);
+      $('calcVentBtn').addEventListener('click', calculateAndShowVentilator);
+      $('clearBtn').addEventListener('click', clearAll);
+      $('clearInfusionBtn').addEventListener('click', clearInfusion);
+      $('clearSriBtn').addEventListener('click', clearSRI);
+      $('clearVentBtn').addEventListener('click', clearVentilator);
+      $('copyPatientBtn').addEventListener('click', copyPatient);
+      $('copyInfusionBtn').addEventListener('click', copyInfusion);
+      $('copySriBtn').addEventListener('click', copySRI);
+      $('copyVentBtn').addEventListener('click', copyVentilator);
+      $('clearInfusionRecentBtn').addEventListener('click', () => clearRecentCalculations('infusion'));
+      $('clearSriRecentBtn').addEventListener('click', () => clearRecentCalculations('sri'));
+      setupTabs();
+    }
+
+    loadState();
+    setupListeners();
+    loadPatientCollapsed();
+    calculatePatient();
+    calculateScales();
+    updateSriPresetFilter();
+    renderRecentCalculations();
+    if ($('drugAmount').value && $('totalVolume').value && $('targetDose').value) calculateInfusion();
+    if ($('sriDose').value && $('sriConcentration').value) calculateSRI();
+    if ($('heightCm').value || $('ventManualWeight').value) calculateVentilator();
+  </script>
+</body>
+</html>
